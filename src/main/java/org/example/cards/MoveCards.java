@@ -1,6 +1,5 @@
 package org.example.cards;
 
-import org.example.cards.Card;
 import org.example.players.Player;
 
 public class MoveCards {
@@ -8,8 +7,8 @@ public class MoveCards {
     public static class MoveUpCard implements Card {
         @Override
         public void execute(Player user, Player opponent) {
-            System.out.println(user.getName() + " moves up.");
-            user.setPosition(user.getPositionX(), user.getPositionY() - 1);
+            System.out.println(user.getName() + " attempts to move up.");
+            user.move(0, -1);  // 위로 이동
         }
 
         @Override
@@ -21,8 +20,8 @@ public class MoveCards {
     public static class MoveDownCard implements Card {
         @Override
         public void execute(Player user, Player opponent) {
-            System.out.println(user.getName() + " moves down.");
-            user.setPosition(user.getPositionX(), user.getPositionY() + 1);
+            System.out.println(user.getName() + " attempts to move down.");
+            user.move(0, 1);  // 아래로 이동
         }
 
         @Override
@@ -34,8 +33,8 @@ public class MoveCards {
     public static class MoveLeftCard implements Card {
         @Override
         public void execute(Player user, Player opponent) {
-            System.out.println(user.getName() + " moves left.");
-            user.setPosition(user.getPositionX() - 1, user.getPositionY());
+            System.out.println(user.getName() + " attempts to move left.");
+            user.move(-1, 0);  // 왼쪽으로 이동
         }
 
         @Override
@@ -47,8 +46,8 @@ public class MoveCards {
     public static class MoveRightCard implements Card {
         @Override
         public void execute(Player user, Player opponent) {
-            System.out.println(user.getName() + " moves right.");
-            user.setPosition(user.getPositionX() + 1, user.getPositionY());
+            System.out.println(user.getName() + " attempts to move right.");
+            user.move(1, 0);  // 오른쪽으로 이동
         }
 
         @Override
