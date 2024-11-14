@@ -1,8 +1,7 @@
 package org.example.game;
 
-import java.util.Arrays;
-import java.util.Scanner;
 import org.example.players.Player;
+import java.util.Scanner;
 
 public class Game {
     private Player player1;
@@ -14,16 +13,22 @@ public class Game {
         this.player2 = player2;
     }
 
+    public int getTurnCount() {
+        return turnCount;
+    }
+
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
+    }
+
     public void start() {
         Scanner scanner = new Scanner(System.in);
         while (!checkVictory()) {
             System.out.println("\n--- Turn " + turnCount + " ---");
 
-            System.out.println(player1.getName() + ", choose 3 cards (comma separated, e.g., moveup,attack,guard):");
-            player1.chooseCards(Arrays.asList(scanner.nextLine().trim().toLowerCase().split(",")));
-
-            System.out.println(player2.getName() + ", choose 3 cards (comma separated, e.g., moveup,attack,guard):");
-            player2.chooseCards(Arrays.asList(scanner.nextLine().trim().toLowerCase().split(",")));
+            // 각 플레이어가 카드 선택
+            player1.chooseCards(scanner);
+            player2.chooseCards(scanner);
 
             playTurn();
             turnCount++;
@@ -35,12 +40,26 @@ public class Game {
     }
 
     private void playTurn() {
+        // 각 플레이어의 카드 3장을 순서대로 실행
         for (int i = 0; i < 3; i++) {
-            System.out.println("\n" + player1.getName() + " uses card: " + player1.useNextCard(player2));
-            if (checkVictory()) return;
+            boolean player1Guard = player1.isNextCardGuard();
+            boolean player2Guard = player2.isNextCardGuard();
 
-            System.out.println(player2.getName() + " uses card: " + player2.useNextCard(player1));
-            if (checkVictory()) return;
+           if (!player1Guard && player2Guard) {
+                // player2가 가드 카드를 사용하고, player1은 가드 카드를 사용하지 않는 경우
+                System.out.println(player2.getName() + " uses card: " + player2.useNextCard(player1));
+                if (checkVictory()) return;
+
+                System.out.println(player1.getName() + " uses card: " + player1.useNextCard(player2));
+                if (checkVictory()) return;
+            } else {
+                // 기본 순서대로 사용
+               System.out.println(player1.getName() + " uses card: " + player1.useNextCard(player2));
+               if (checkVictory()) return;
+
+               System.out.println(player2.getName() + " uses card: " + player2.useNextCard(player1));
+               if (checkVictory()) return;
+            }
         }
     }
 

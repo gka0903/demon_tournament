@@ -11,8 +11,10 @@ public class CardFactory {
                 return new MoveCards.MoveLeftCard();
             case "moveright":
                 return new MoveCards.MoveRightCard();
-            case "attack":
-                return new AttackCard(15); // 기본 공격력
+            case "basicattack":
+                return new BasicAttackCard();
+            case "longrangeattack":
+                return new LongRangeAttackCard();
             case "guard":
                 return new GuardCard();
             case "energy":
