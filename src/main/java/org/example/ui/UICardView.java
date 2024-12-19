@@ -1,5 +1,6 @@
 package org.example.ui;
 
+import java.util.Arrays;
 import org.example.card.CardData;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import org.example.card.CardType;
 
 public class UICardView extends JPanel {
     private JPanel cardPanel; // 카드 버튼 패널
@@ -138,5 +140,41 @@ public class UICardView extends JPanel {
                 continueButton.setEnabled(true);
             }
         }
+    }
+
+    public static void main(String[] args) {
+        // 테스트용 카드 데이터 생성
+        CardData card1 = new CardData(CardType.ATTACK, 10, 5, "src/main/resources/animations/cards/test7.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
+        CardData card2 = new CardData(CardType.DEFENSE, 8, 6, "src/main/resources/animations/cards/test5.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
+        CardData card3 = new CardData(CardType.ATTACK, 12, 7, "src/main/resources/animations/cards/test8.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
+        CardData card4 = new CardData(CardType.DEFENSE, 6, 4, "src/main/resources/animations/cards/test4.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
+
+        // 카드 데이터 리스트
+        java.util.List<CardData> cardDataList = Arrays.asList(card1, card2, card3, card4);
+
+        // JFrame 생성
+        JFrame frame = new JFrame("UICardView Test");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 400); // 프레임 크기 설정
+        frame.setLayout(new BorderLayout());
+
+        // UICardView 생성
+        UICardView uiCardView = new UICardView(cardDataList);
+        frame.add(uiCardView, BorderLayout.CENTER);
+
+        // 버튼 클릭 후 행동을 시뮬레이션 할 수 있는 버튼 추가 (테스트용)
+        JButton testButton = new JButton("Test Continue and Clear");
+        testButton.addActionListener(e -> {
+            // "Continue" 버튼 클릭 시 동작
+            uiCardView.onClickContinueButton();
+
+            // "Clear" 버튼 클릭 시 동작
+            uiCardView.onClickClearButton();
+        });
+
+        frame.add(testButton, BorderLayout.SOUTH); // 버튼을 하단에 추가
+
+        // 프레임 표시
+        frame.setVisible(true);
     }
 }

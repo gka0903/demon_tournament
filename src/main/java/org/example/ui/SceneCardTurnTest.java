@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import org.example.card.Card;
 import org.example.card.CardData;
 import org.example.card.CardType;
+import org.example.field.SceneCard;
 
 public class SceneCardTurnTest {
 
