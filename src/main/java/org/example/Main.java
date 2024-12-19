@@ -1,16 +1,36 @@
 package org.example;
 
-import org.example.game.Game;
-import org.example.players.Player;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import org.example.card.CardData;
+import org.example.ui.UICardView;
 
 public class Main {
     public static void main(String[] args) {
-        // 두 플레이어 초기 위치 설정
-        Player player1 = new Player("Player 1", 0, 1);
-        Player player2 = new Player("Player 2", 3, 1);
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Card Selection View");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
 
-        // 게임 시작
-        Game game = new Game(player1, player2);
-        game.start();
+            // 카드 데이터 생성
+            List<CardData> cards = new ArrayList<>();
+            for (int i = 0; i < 8; i++) {
+                cards.add(new CardData(
+                        i % 2 == 0 ? org.example.card.CardType.ATTACK : org.example.card.CardType.DEFENSE,
+                        10 + i, 5 + i,
+                        "animations/cards/test" + (i + 1) + ".png",
+                        "animations/cards/card_back.png",
+                        false, null, null
+                ));
+            }
+
+            // 카드 뷰 생성
+            UICardView cardView = new UICardView(cards);
+            frame.add(cardView);
+
+            frame.setVisible(true);
+        });
     }
 }
