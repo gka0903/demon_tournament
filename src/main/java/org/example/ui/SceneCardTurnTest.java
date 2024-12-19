@@ -149,7 +149,7 @@ public class SceneCardTurnTest {
         List<Card> cards = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             cards.add(new Card(new CardData(
-                    CardType.ATTACK,
+                    CardType.ATTACK1,
                     10 * i, 5 * i,
                     "path/to/" + prefix + "_Front" + i + ".png",
                     "path/to/Back.png",

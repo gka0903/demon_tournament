@@ -150,7 +150,7 @@ public class SceneCardPanel extends JPanel {
         List<Card> cards = new ArrayList<>();
         for (int i = startIndex; i <= endIndex; i++) {
             CardData cardData = new CardData(
-                    CardType.ATTACK,
+                    CardType.ATTACK1,
                     10 + i,
                     5 + i,
                     "src/main/resources/animations/cards/test" + i + ".png",

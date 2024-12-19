@@ -1,5 +1,6 @@
 package org.example.ui;
 
+import org.example.card.AttackShape;
 import org.example.card.Card;
 import org.example.card.CardData;
 
@@ -171,13 +172,13 @@ public class CardSelectionPanel extends JPanel {
 
     public static void main(String[] args) {
         // Create test card data
-        CardData cardData1 = new CardData(CardType.ATTACK, 10, 5, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/back.png", false, null, null);
+        CardData cardData1 = new CardData(CardType.ATTACK1, 10, 5, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/back.png", false, null, AttackShape.CROSS);
         CardData cardData2 = new CardData(CardType.DEFENSE, 8, 6, "src/main/resources/animations/cards/test2.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData3 = new CardData(CardType.ATTACK, 12, 7, "src/main/resources/animations/cards/test3.png", "src/main/resources/animations/cards/back.png", false, null, null);
+        CardData cardData3 = new CardData(CardType.ATTACK2, 12, 7, "src/main/resources/animations/cards/test3.png", "src/main/resources/animations/cards/back.png", false, null, null);
         CardData cardData4 = new CardData(CardType.DEFENSE, 6, 4, "src/main/resources/animations/cards/test4.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData5 = new CardData(CardType.ATTACK, 20, 10, "src/main/resources/animations/cards/test5.png", "src/main/resources/animations/cards/back.png", false, null, null);
+        CardData cardData5 = new CardData(CardType.ATTACK1, 20, 10, "src/main/resources/animations/cards/test5.png", "src/main/resources/animations/cards/back.png", false, null, null);
         CardData cardData6 = new CardData(CardType.DEFENSE, 18, 9, "src/main/resources/animations/cards/test6.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData7 = new CardData(CardType.ATTACK, 15, 7, "src/main/resources/animations/cards/test7.png", "src/main/resources/animations/cards/back.png", false, null, null);
+        CardData cardData7 = new CardData(CardType.ATTACK2, 15, 7, "src/main/resources/animations/cards/test7.png", "src/main/resources/animations/cards/back.png", false, null, null);
         CardData cardData8 = new CardData(CardType.DEFENSE, 10, 5, "src/main/resources/animations/cards/test8.png", "src/main/resources/animations/cards/back.png", false, null, null);
 
         List<Card> cardList = List.of(new Card(cardData1), new Card(cardData2), new Card(cardData3), new Card(cardData4),

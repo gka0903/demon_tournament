@@ -144,9 +144,9 @@ public class UICardView extends JPanel {
 
     public static void main(String[] args) {
         // 테스트용 카드 데이터 생성
-        CardData card1 = new CardData(CardType.ATTACK, 10, 5, "src/main/resources/animations/cards/test7.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
+        CardData card1 = new CardData(CardType.ATTACK1, 10, 5, "src/main/resources/animations/cards/test7.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
         CardData card2 = new CardData(CardType.DEFENSE, 8, 6, "src/main/resources/animations/cards/test5.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
-        CardData card3 = new CardData(CardType.ATTACK, 12, 7, "src/main/resources/animations/cards/test8.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
+        CardData card3 = new CardData(CardType.ATTACK2, 12, 7, "src/main/resources/animations/cards/test8.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
         CardData card4 = new CardData(CardType.DEFENSE, 6, 4, "src/main/resources/animations/cards/test4.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null);
 
         // 카드 데이터 리스트
