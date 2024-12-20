@@ -2,7 +2,6 @@ package org.example.test;
 
 import javax.swing.*;
 import java.awt.*;
-import org.example.ui.DamageText;
 
 public class DamageTextTest {
     public static void main(String[] args) {

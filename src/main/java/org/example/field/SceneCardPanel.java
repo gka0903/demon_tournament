@@ -48,7 +48,7 @@ public class SceneCardPanel extends JPanel {
         }
 
         // 카드 이동 타이머 설정
-        Timer timer = new Timer(5000, null); // 5초 간격으로 카드 이동 시작
+        Timer timer = new Timer(8000, null);
         timer.addActionListener(e -> {
             if (!leftCards.isEmpty() && !rightCards.isEmpty()) {
                 SceneCard leftCard = leftCards.remove(leftCards.size() - 1); // 좌측 끝 카드
@@ -106,7 +106,7 @@ public class SceneCardPanel extends JPanel {
                 leftCard.useCard(); // 카드 사용
                 rightCard.useCard(); // 카드 사용
 
-                Timer removeTimer = new Timer(3500, evt -> {
+                Timer removeTimer = new Timer(7000, evt -> {
                     remove(leftLabel); // 카드 제거
                     remove(rightLabel); // 카드 제거
                     repaint(); // 화면 갱신

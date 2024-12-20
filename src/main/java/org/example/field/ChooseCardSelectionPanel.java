@@ -1,4 +1,4 @@
-package org.example.ui;
+package org.example.field;
 
 import org.example.card.AttackShape;
 import org.example.card.Card;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.example.card.CardType;
 
-public class CardSelectionPanel extends JPanel {
+public class ChooseCardSelectionPanel extends JPanel {
     private List<JButton> cardButtons;
     private List<Card> cardList;
     private List<Card> selectedCards;
@@ -20,7 +20,7 @@ public class CardSelectionPanel extends JPanel {
     private JButton clearButton;
     private JButton continueButton;
 
-    public CardSelectionPanel(List<Card> cardList) {
+    public ChooseCardSelectionPanel(List<Card> cardList) {
         this.cardList = cardList;
         this.selectedCards = new ArrayList<>();
         setLayout(new BorderLayout());
@@ -187,7 +187,7 @@ public class CardSelectionPanel extends JPanel {
         JFrame frame = new JFrame("Card Selection Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
-        frame.add(new CardSelectionPanel(cardList));
+        frame.add(new ChooseCardSelectionPanel(cardList));
         frame.setVisible(true);
     }
 }
