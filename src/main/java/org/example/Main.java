@@ -18,7 +18,7 @@ public class Main {
             List<CardData> cards = new ArrayList<>();
             for (int i = 0; i < 8; i++) {
                 cards.add(new CardData(
-                        i % 2 == 0 ? org.example.card.CardType.ATTACK : org.example.card.CardType.DEFENSE,
+                        i % 2 == 0 ? org.example.card.CardType.ATTACK1 : org.example.card.CardType.DEFENSE,
                         10 + i, 5 + i,
                         "animations/cards/test" + (i + 1) + ".png",
                         "animations/cards/card_back.png",

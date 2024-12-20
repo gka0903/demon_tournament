@@ -1,4 +1,4 @@
-package org.example.test;
+package org.example.field;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,8 +10,6 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
     private Image playerImage; // 플레이어 이미지를 저장
     private Image movingImage; // 이동 중에 사용할 이미지
     private Image currentImage; // 현재 표시 중인 이미지
-    private final int CELL_WIDTH = 200; // 각 칸의 가로 크기
-    private final int CELL_HEIGHT = 150; // 각 칸의 세로 크기
     private final int GRID_ROWS = 3; // 그리드 행 개수
     private final int GRID_COLUMNS = 4; // 그리드 열 개수
     private Point playerGridPosition; // 그리드 상에서 플레이어 위치
@@ -23,6 +21,7 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
     private int currentStep; // 현재 이동 단계
     private Color[][] gridColors; // 셀의 색상을 저장하는 배열
     private Character character1;
+    private boolean isInitialPositionSet;  // 처음 위치가 설정되었는지 여부를 추적
 
     public PlayField(Character character1) {
         keys = new boolean[256];
@@ -38,6 +37,7 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
         playerGridPosition = character1.getGridPosition();
         playerPixelPosition = getWorldPosition(playerGridPosition);
         targetPixelPosition = playerPixelPosition;
+        isInitialPositionSet = false;
 
         // 그리드 색상 초기화
         gridColors = new Color[GRID_ROWS][GRID_COLUMNS];
@@ -56,8 +56,12 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
 
     // 그리드 좌표를 화면상의 중앙 좌표로 변환
     private Point getWorldPosition(Point gridPosition) {
-        int x = gridPosition.x * CELL_WIDTH + CELL_WIDTH / 2;
-        int y = gridPosition.y * CELL_HEIGHT + CELL_HEIGHT / 2;
+        // 각 셀 크기 동적으로 계산
+        int cellWidth = getWidth() / GRID_COLUMNS;
+        int cellHeight = getHeight() / GRID_ROWS;
+
+        int x = gridPosition.x * cellWidth + cellWidth / 2;
+        int y = gridPosition.y * cellHeight + cellHeight / 2;
         return new Point(x, y);
     }
 
@@ -66,20 +70,29 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // 그리드 크기 계산
+        int cellWidth = getWidth() / GRID_COLUMNS;
+        int cellHeight = getHeight() / GRID_ROWS;
+
         // 그리드 그리기
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLUMNS; col++) {
                 g.setColor(gridColors[row][col]);
-                g.fillRect(col * CELL_WIDTH, row * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+                g.fillRect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
                 g.setColor(Color.BLACK);
-                g.drawRect(col * CELL_WIDTH, row * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT);
+                g.drawRect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
             }
+        }
+
+        if (!isInitialPositionSet) {
+            playerPixelPosition = getWorldPosition(playerGridPosition); // 처음 위치 설정
+            isInitialPositionSet = true;  // 위치 설정 완료
         }
 
         // 플레이어 이미지 그리기
         if (currentImage != null) {
-            int imageWidth = (int) (CELL_WIDTH ); // 이미지 크기 조정
-            int imageHeight = (int) (CELL_HEIGHT); // 이미지 크기 조정
+            int imageWidth = cellWidth; // 이미지 크기 조정
+            int imageHeight = cellHeight; // 이미지 크기 조정
             g.drawImage(
                     currentImage,
                     playerPixelPosition.x - imageWidth / 2,
@@ -89,6 +102,7 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
                     this
             );
         }
+
     }
 
     public void actionPerformed(ActionEvent e) {
