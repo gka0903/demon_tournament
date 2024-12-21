@@ -1,15 +1,15 @@
 package org.example.ui;
 
-import java.awt.*;
-import javax.swing.*;
-import org.example.card.AttackShape;
-import org.example.card.Card;
-import org.example.card.CardData;
-import org.example.card.CardType;
-import org.example.card.MoveDirection;
+import java.util.List;
+import org.example.card.*;
 import org.example.character.Character;
 import org.example.field.PlayField;
 import org.example.field.SceneCardPanel;
+import org.example.select.HealthEnergyBarPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import org.example.test.StateManager;
 
 public class Field {
     public static void main(String[] args) {
@@ -20,6 +20,14 @@ public class Field {
 
         // 프레임의 레이아웃을 BoxLayout으로 설정 (세로 방향)
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+//        java.util.List<int[]> statsList = List.of(
+//                new int[]{100, 100, 100, 100}, // 첫 번째 상태
+//                new int[]{90, 100, 80, 100}, // 첫 번째 상태
+//                new int[]{80, 90, 70, 90},  // 두 번째 상태
+//                new int[]{70, 80, 60, 80},  // 세 번째 상태
+//                new int[]{60, 70, 50, 70}   // 네 번째 상태
+//        );
 
         // 캐릭터 설정
         Character inuyasha = new Character(
@@ -46,32 +54,45 @@ public class Field {
                 new Point(3, 1)
         );
 
-        inuyasha.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/카드뒷면.png", false, MoveDirection.RIGHT, null)));
-        inuyasha.addCard(new Card(new CardData(CardType.ATTACK1, 10, 5, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, AttackShape.HORIZONTAL)));
-        inuyasha.addCard(new Card(new CardData(CardType.ATTACK2, 10, 5, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, AttackShape.HORIZONTAL)));
+        inuyasha.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "", "", false, MoveDirection.RIGHT, null)));
+        inuyasha.addCard(new AttackCard(new CardData(CardType.ATTACK1, 10, 5, "", "", false, null, AttackShape.HORIZONTAL)));
+        inuyasha.addCard(new AttackCard(new CardData(CardType.ATTACK2, 15, 7, "", "", false, null, AttackShape.HORIZONTAL)));
 
-        kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 3, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null)));
-        kagome.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/카드뒷면.png", false, MoveDirection.LEFT, null)));
-        kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 0, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/카드뒷면.png", false, null, null)));
+        kagome.addCard(new Card(new CardData(CardType.HEAL, 0, 0, "", "", false, null, null)));
+        kagome.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "", "", false, MoveDirection.LEFT, null)));
+        kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 0, "", "", false, null, null)));
 
-        // PlayField 설정 (A 부분) - 화면의 80% 차지
+        // PlayField 설정 (중간 50%)
         PlayField gamePanel = new PlayField(inuyasha, kagome);
 
-        // SceneCardPanel 설정 (B 부분) - 화면의 20% 차지
+        StateManager stateManager = new StateManager(inuyasha, kagome);
+        List<int[]> statsList = stateManager.getStatsList();
+
+        for (int i = 0; i < statsList.size(); i++) {
+            int[] stats = statsList.get(i);
+            System.out.printf("Turn %d: P1[HP=%d, EN=%d], P2[HP=%d, EN=%d]%n",
+                    i, stats[0], stats[1], stats[2], stats[3]);
+        }
+
+        // Health and Energy Bar Panel 설정 (상단 20%)
+        HealthEnergyBarPanel healthEnergyBarPanel = new HealthEnergyBarPanel(statsList);
+        healthEnergyBarPanel.setMaximumSize(new Dimension(frame.getWidth(), (int) (frame.getHeight() * 0.2)));
+
+        gamePanel.setMaximumSize(new Dimension(frame.getWidth(), (int) (frame.getHeight() * 0.5)));
+
+        // SceneCardPanel 설정 (하단 30%)
         SceneCardPanel sceneCardPanel = new SceneCardPanel();
         sceneCardPanel.initializeSceneCards(inuyasha.getCardList(), kagome.getCardList());
-
-        // 각 패널 크기 설정
-        gamePanel.setMaximumSize(new Dimension(frame.getWidth(), (int) (frame.getHeight() * 0.7)));
         sceneCardPanel.setMaximumSize(new Dimension(frame.getWidth(), (int) (frame.getHeight() * 0.3)));
 
         // 패널에 여백 제거
         gamePanel.setBorder(BorderFactory.createEmptyBorder());
         sceneCardPanel.setBorder(BorderFactory.createEmptyBorder());
 
-        // PlayField는 위쪽에, SceneCardPanel은 아래쪽에 배치
-        frame.add(gamePanel);
-        frame.add(sceneCardPanel);
+        // 패널을 프레임에 추가
+        frame.add(healthEnergyBarPanel); // 상단 패널
+        frame.add(gamePanel); // 중간 패널
+        frame.add(sceneCardPanel); // 하단 패널
 
         // 프레임 표시
         frame.setVisible(true);
