@@ -3,78 +3,105 @@ package org.example.field;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import org.example.card.AttackShape;
+import org.example.card.Card;
+import org.example.card.CardData;
+import org.example.card.CardType;
+import org.example.card.MoveDirection;
+import org.example.card.AttackCard;
 import org.example.character.Character;
 
-public class PlayField extends JPanel implements ActionListener, KeyListener {
-    private Timer timer; // 게임 업데이트를 위한 타이머
-    private Image playerImage; // 플레이어 이미지를 저장
-    private Image movingImage; // 이동 중에 사용할 이미지
-    private Image currentImage; // 현재 표시 중인 이미지
-    private final int GRID_ROWS = 3; // 그리드 행 개수
-    private final int GRID_COLUMNS = 4; // 그리드 열 개수
-    private Point playerGridPosition; // 그리드 상에서 플레이어 위치
-    private Point playerPixelPosition; // 실제 화면 픽셀 단위 위치
-    private Point targetPixelPosition; // 이동할 목표 위치
-    private boolean isMoving; // 이동 중인지 여부를 확인하는 플래그
-    private boolean[] keys; // 키 입력 상태 배열
-    private final int MOVE_STEPS = 30; // 이동 단계 수
-    private int currentStep; // 현재 이동 단계
-    private Color[][] gridColors; // 셀의 색상을 저장하는 배열
-    private Character character1;
-    private boolean isInitialPositionSet;  // 처음 위치가 설정되었는지 여부를 추적
+import java.util.List;
 
-    public PlayField(Character character1) {
-        keys = new boolean[256];
-        isMoving = false;
+public class PlayField extends JPanel {
+    private final int GRID_ROWS = 3;
+    private final int GRID_COLUMNS = 4;
+    private final int MOVE_STEPS = 15;
 
-        // 이미지 로드
-        playerImage = character1.getCurrentImage();
-        movingImage = character1.getMoveImage();
-        currentImage = playerImage; // 초기 이미지는 정지 상태 이미지
+    private Image currentImage1, currentImage2;
+    private Image movingImage1, movingImage2;
+    private Image playerImage1, playerImage2;
+
+    private Point playerGridPosition1, playerGridPosition2;
+    private Point playerPixelPosition1, playerPixelPosition2;
+    private Color[][] gridColors;
+
+    private Character character1, character2;
+    private int currentCardIndex1, currentCardIndex2;
+    private boolean isCharacter1Turn;
+
+    public PlayField(Character character1, Character character2) {
         this.character1 = character1;
+        this.character2 = character2;
+
+        this.isCharacter1Turn = true;
+
+        playerImage1 = character1.getCurrentImage();
+        movingImage1 = character1.getMoveImage();
+        currentImage1 = playerImage1;
+
+        playerImage2 = character2.getCurrentImage();
+        movingImage2 = character2.getMoveImage();
+        currentImage2 = playerImage2;
 
         // 초기 위치 설정
-        playerGridPosition = character1.getGridPosition();
-        playerPixelPosition = getWorldPosition(playerGridPosition);
-        targetPixelPosition = playerPixelPosition;
-        isInitialPositionSet = false;
+        playerGridPosition1 = character1.getGridPosition();
+        if (playerGridPosition1 == null) {
+            // 기본 위치를 (0, 0)으로 설정
+            playerGridPosition1 = new Point(0, 0);
+        }
 
-        // 그리드 색상 초기화
+        playerPixelPosition1 = getWorldPosition(playerGridPosition1);
+
+        playerGridPosition2 = character2.getGridPosition();
+        if (playerGridPosition2 == null) {
+            playerGridPosition2 = new Point(GRID_COLUMNS - 1, GRID_ROWS - 1);
+        }
+
+        playerPixelPosition2 = getWorldPosition(playerGridPosition2);
+
         gridColors = new Color[GRID_ROWS][GRID_COLUMNS];
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLUMNS; col++) {
-                gridColors[row][col] = Color.LIGHT_GRAY; // 기본 색상 설정
+                gridColors[row][col] = Color.LIGHT_GRAY;
             }
         }
 
-        timer = new Timer(15, this);
-        timer.start();
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                playerPixelPosition1 = getWorldPosition(playerGridPosition1);
+                playerPixelPosition2 = getWorldPosition(playerGridPosition2);
+                repaint();
+            }
+        });
 
-        addKeyListener(this);
-        setFocusable(true);
+        // 초기 1초 대기 후 실행
+        Timer initialDelayTimer = new Timer(1000, e -> {
+            ((Timer) e.getSource()).stop();
+            executeAction(); // 1초 딜레이 후 액션 실행 시작
+        });
+        initialDelayTimer.setRepeats(false);
+        initialDelayTimer.start();
+
+//        executeAction();
     }
 
-    // 그리드 좌표를 화면상의 중앙 좌표로 변환
     private Point getWorldPosition(Point gridPosition) {
-        // 각 셀 크기 동적으로 계산
         int cellWidth = getWidth() / GRID_COLUMNS;
         int cellHeight = getHeight() / GRID_ROWS;
-
         int x = gridPosition.x * cellWidth + cellWidth / 2;
         int y = gridPosition.y * cellHeight + cellHeight / 2;
         return new Point(x, y);
     }
 
-    // 화면에 그리드와 플레이어 이미지를 그리는 메서드
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // 그리드 크기 계산
         int cellWidth = getWidth() / GRID_COLUMNS;
         int cellHeight = getHeight() / GRID_ROWS;
 
-        // 그리드 그리기
         for (int row = 0; row < GRID_ROWS; row++) {
             for (int col = 0; col < GRID_COLUMNS; col++) {
                 g.setColor(gridColors[row][col]);
@@ -84,140 +111,319 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        if (!isInitialPositionSet) {
-            playerPixelPosition = getWorldPosition(playerGridPosition); // 처음 위치 설정
-            isInitialPositionSet = true;  // 위치 설정 완료
-        }
-
-        // 플레이어 이미지 그리기
-        if (currentImage != null) {
-            int imageWidth = cellWidth; // 이미지 크기 조정
-            int imageHeight = cellHeight; // 이미지 크기 조정
+        if (currentImage1 != null) {
             g.drawImage(
-                    currentImage,
-                    playerPixelPosition.x - imageWidth / 2,
-                    playerPixelPosition.y - imageHeight / 2,
-                    imageWidth,
-                    imageHeight,
+                    currentImage1,
+                    playerPixelPosition1.x - cellWidth / 2,
+                    playerPixelPosition1.y - cellHeight / 2,
+                    cellWidth,
+                    cellHeight,
                     this
             );
         }
 
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        if (isMoving) {
-            moveStep();
-        } else {
-            handleKeyInput();
+        if (currentImage2 != null) {
+            g.drawImage(
+                    currentImage2,
+                    playerPixelPosition2.x - cellWidth / 2,
+                    playerPixelPosition2.y - cellHeight / 2,
+                    cellWidth,
+                    cellHeight,
+                    this
+            );
         }
     }
 
-    // 이동 단계를 처리
-    private void moveStep() {
-        // 이동 단계 계산
-        int dx = (targetPixelPosition.x - playerPixelPosition.x) / (MOVE_STEPS - currentStep);
-        int dy = (targetPixelPosition.y - playerPixelPosition.y) / (MOVE_STEPS - currentStep);
+    private boolean isExecutingAction = false; // 실행 중 상태 플래그
 
-        playerPixelPosition.x += dx;
-        playerPixelPosition.y += dy;
-        repaint(); // 이미지를 다시 그리기
-        currentStep++;
+    private void executeAction() {
+        if (isExecutingAction) return; // 실행 중이면 무시
 
-        // 이동 시작 시 이미지 변경
-        if (currentStep == 1) {
-            currentImage = movingImage; // 이동 중 이미지로 변경
-        }
+        Card card1 = character1.useCard();
+        Card card2 = character2.useCard();
 
-        // 모든 단계가 완료되었으면 이동 종료
-        if (currentStep >= MOVE_STEPS) {
-            playerPixelPosition = targetPixelPosition;
-            isMoving = false;
+        if (card1 != null && card2 != null) {
+            int priority1 = getCardPriority(card1);
+            int priority2 = getCardPriority(card2);
 
-            // 이동 완료 후 원래 이미지로 복원
-            currentImage = playerImage;
-            repaint();
+            isExecutingAction = true;
+
+            if (priority1 < priority2) {
+                executeCardWithDelay(card1, true, () -> {
+                    currentCardIndex1++;
+                    executeCardWithDelay(card2, false, () -> {
+                        currentCardIndex2++;
+                        isExecutingAction = false;
+                        executeAction(); // 다음 카드 실행
+                    });
+                });
+            } else {
+                executeCardWithDelay(card2, false, () -> {
+                    currentCardIndex2++;
+                    executeCardWithDelay(card1, true, () -> {
+                        currentCardIndex1++;
+                        isExecutingAction = false;
+                        executeAction(); // 다음 카드 실행
+                    });
+                });
+            }
+        } else if (card1 != null) {
+            // 캐릭터 1만 남은 경우
+            isExecutingAction = true;
+            executeCardWithDelay(card1, true, () -> {
+                currentCardIndex1++;
+                isExecutingAction = false;
+                executeAction(); // 다음 카드 실행
+            });
+        } else if (card2 != null) {
+            // 캐릭터 2만 남은 경우
+            isExecutingAction = true;
+            executeCardWithDelay(card2, false, () -> {
+                currentCardIndex2++;
+                isExecutingAction = false;
+                executeAction(); // 다음 카드 실행
+            });
         }
     }
 
-    // 키 입력에 따라 이동 처리
-    private void handleKeyInput() {
-        if (keys[KeyEvent.VK_LEFT] && playerGridPosition.x > 0) {
-            movePlayerTo(playerGridPosition.x - 1, playerGridPosition.y);
-        } else if (keys[KeyEvent.VK_RIGHT] && playerGridPosition.x < GRID_COLUMNS - 1) {
-            movePlayerTo(playerGridPosition.x + 1, playerGridPosition.y);
-        } else if (keys[KeyEvent.VK_UP] && playerGridPosition.y > 0) {
-            movePlayerTo(playerGridPosition.x, playerGridPosition.y - 1);
-        } else if (keys[KeyEvent.VK_DOWN] && playerGridPosition.y < GRID_ROWS - 1) {
-            movePlayerTo(playerGridPosition.x, playerGridPosition.y + 1);
-        } else if (keys[KeyEvent.VK_H]) { // Heal 상태
-            triggerTemporaryState("heal");
-        } else if (keys[KeyEvent.VK_S]) { // Defense 상태
-            triggerTemporaryState("defense");
-        } else if (keys[KeyEvent.VK_A]) { // 공격1 상태
-            triggerTemporaryState("attack1");
-        } else if (keys[KeyEvent.VK_D]) { // 공격2 상태
-            triggerTemporaryState("attack2");
-        } else if (keys[KeyEvent.VK_T]) { // 타격 상태 (T 키로 트리거)
-            triggerTemporaryState("hit");
+    // 카드 실행 후 딜레이를 포함한 메서드
+    private void executeCardWithDelay(Card card, boolean isCharacter1, Runnable onComplete) {
+        executeCardAction(card, isCharacter1);
+
+        // 동작 + 대기 시간 후 onComplete 실행
+        Timer delayTimer = new Timer(4000, e -> {
+            ((Timer) e.getSource()).stop();
+            onComplete.run(); // 실행 완료 후 콜백 호출
+        });
+        delayTimer.setRepeats(false);
+        delayTimer.start();
+    }
+
+    private void executeCardAction(Card card, boolean isCharacter1) {
+        CardData cardData = card.getCardData();
+        switch (cardData.getCardType()) {
+            case ATTACK1, ATTACK2 -> handleAttack(cardData, isCharacter1);
+            case MOVE -> handleMove(cardData.getMoveDir(), isCharacter1);
+            case DEFENSE -> handleDefense(cardData, isCharacter1);
+            case HEAL -> applyState("heal", isCharacter1);
         }
     }
 
-    private void triggerTemporaryState(String state) {
-        switch (state) {
-            case "heal":
-                currentImage = character1.getHealImage(); // 힐 이미지로 변경
-                break;
-            case "defense":
-                currentImage = character1.getDefenseImage(); // 방어 이미지로 변경
-                break;
-            case "attack1":
-                currentImage = character1.getAttack1Image(); // 공격1 이미지로 변경
-                break;
-            case "attack2":
-                currentImage = character1.getAttack2Image(); // 공격2 이미지로 변경
-                break;
-            case "hit":
-                currentImage = character1.getHitImage(); // 타격 이미지로 변경
-                break;
+    private void handleAttack(CardData cardData, boolean isCharacter1) {
+        Point attackerPosition = isCharacter1 ? playerGridPosition1 : playerGridPosition2;
+        Point targetPosition = isCharacter1 ? playerGridPosition2 : playerGridPosition1;
+
+        // 방어 중인지 확인
+        boolean targetInDefense = isCharacter1 ? character2.isDefending() : character1.isDefending();
+
+        // 공격 동작에 따라 캐릭터 모션 적용
+        String attackState = cardData.getCardType() == CardType.ATTACK1 ? "attack1" : "attack2";
+        applyState(attackState, isCharacter1);
+
+        AttackCard attackCard = new AttackCard(cardData);
+        List<Point> attackRange = attackCard.getGridPosList(attackerPosition);
+
+        // 공격 범위 타일 색상 변경
+        for (Point p : attackRange) {
+            if (isValidGridPosition(p)) {
+                gridColors[p.y][p.x] = Color.RED; // 공격 범위를 빨간색으로 설정
+            }
         }
         repaint();
 
-        // 2초 후 원래 이미지로 복원
-        Timer resetTimer = new Timer(2000, e -> {
-            currentImage = playerImage; // 원래 이미지로 복원
+        // 0.5초 후 히트 모션 적용
+        if (attackRange.contains(targetPosition) && !targetInDefense) { // 방어 상태일 경우 hit 무시
+            Timer hitDelayTimer = new Timer(500, e -> {
+                if (isCharacter1) {
+                    applyState("hit", false); // Character 2 맞음
+                } else {
+                    applyState("hit", true);  // Character 1 맞음
+                }
+                ((Timer) e.getSource()).stop(); // 타이머 종료
+            });
+            hitDelayTimer.setRepeats(false);
+            hitDelayTimer.start();
+        }
+
+        // 1초 후 타일 색상 초기화
+        Timer clearTilesTimer = new Timer(1000, e -> {
+            clearAttackTiles(attackRange);
             repaint();
+            ((Timer) e.getSource()).stop();
         });
-        resetTimer.setRepeats(false); // 한 번만 실행되도록 설정
-        resetTimer.start();
+        clearTilesTimer.setRepeats(false);
+        clearTilesTimer.start();
+
+        // 다음 액션 실행을 위한 딜레이
+        Timer delayTimer = new Timer(4000, e -> {
+            executeAction();
+            ((Timer) e.getSource()).stop();
+        });
+        delayTimer.setRepeats(false);
+        delayTimer.start();
     }
 
-    // 플레이어 이동 처리
-    private void movePlayerTo(int newX, int newY) {
-        // 이전 셀 색상 초기화
-        gridColors[playerGridPosition.y][playerGridPosition.x] = Color.LIGHT_GRAY;
 
-        // 그리드 위치 업데이트
-        playerGridPosition.setLocation(newX, newY);
-        targetPixelPosition = getWorldPosition(playerGridPosition);
 
-        // 이동 시작
-        isMoving = true;
-        currentStep = 0;
+
+    private void handleDefense(CardData cardData, boolean isCharacter1) {
+        // 방어 상태 적용
+        applyState("defense", isCharacter1);
+
+        // 방어 상태 8초 유지
+        Timer defenseTimer = new Timer(8000, e -> {
+            if (isCharacter1) {
+                character1.setDefending(false);
+            } else {
+                character2.setDefending(false);
+            }
+            ((Timer) e.getSource()).stop(); // 타이머 종료
+        });
+        defenseTimer.setRepeats(false);
+        defenseTimer.start();
     }
 
-    public void keyPressed(KeyEvent e) {
-        keys[e.getKeyCode()] = true;
+    private void handleMove(MoveDirection direction, boolean isCharacter1) {
+        Point gridPosition = isCharacter1 ? playerGridPosition1 : playerGridPosition2;
+        Point pixelPosition = isCharacter1 ? playerPixelPosition1 : playerPixelPosition2;
+
+        int dx = 0, dy = 0;
+        switch (direction) {
+            case UP -> dy = -1;
+            case DOWN -> dy = 1;
+            case LEFT -> dx = -1;
+            case RIGHT -> dx = 1;
+        }
+
+        int newX = gridPosition.x + dx;
+        int newY = gridPosition.y + dy;
+
+        if (newX >= 0 && newX < GRID_COLUMNS && newY >= 0 && newY < GRID_ROWS) {
+            Point startPosition = new Point(pixelPosition);
+            Point endPosition = getWorldPosition(new Point(newX, newY));
+            gridPosition.setLocation(newX, newY);
+
+            if (isCharacter1) {
+                currentImage1 = movingImage1;
+            } else {
+                currentImage2 = movingImage2;
+            }
+
+            int frameDelay = 33; // 33ms per frame (30 FPS)
+            Timer movementTimer = new Timer(frameDelay, new ActionListener() {
+                int steps = 0;
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int dx = (endPosition.x - startPosition.x) / MOVE_STEPS;
+                    int dy = (endPosition.y - startPosition.y) / MOVE_STEPS;
+
+                    pixelPosition.x += dx;
+                    pixelPosition.y += dy;
+                    repaint();
+                    steps++;
+
+                    if (steps >= MOVE_STEPS) {
+                        pixelPosition.setLocation(endPosition);
+                        if (isCharacter1) {
+                            currentImage1 = playerImage1;
+                        } else {
+                            currentImage2 = playerImage2;
+                        }
+                        repaint();
+                        ((Timer) e.getSource()).stop();
+
+                        // 이동 애니메이션 소요시간 계산
+                        int animationDuration = MOVE_STEPS * frameDelay;
+                        int remainingDelay = 4000 - animationDuration; // 4초에서 애니메이션 시간을 뺌
+
+                        // 남은 대기시간 후 다음 카드 실행
+                        Timer delayTimer = new Timer(Math.max(remainingDelay, 0), ev -> {
+                            executeAction();
+                            ((Timer) ev.getSource()).stop();
+                        });
+                        delayTimer.setRepeats(false);
+                        delayTimer.start();
+                    }
+                }
+            });
+
+            movementTimer.start();
+        }
     }
 
-    public void keyReleased(KeyEvent e) {
-        keys[e.getKeyCode()] = false;
+    private void applyState(String state, boolean isCharacter1) {
+        if (isCharacter1) {
+            if ("defense".equals(state)) character1.setDefending(true); // 방어 상태 ON
+            else if ("hit".equals(state) && character1.isDefending()) return; // 방어 상태 중 hit 방지
+
+            // 상태 처리
+            currentImage1 = switch (state) {
+                case "attack1" -> character1.getAttack1Image();
+                case "attack2" -> character1.getAttack2Image();
+                case "heal" -> character1.getHealImage();
+                case "defense" -> character1.getDefenseImage();
+                case "hit" -> character1.getHitImage();
+                default -> playerImage1;
+            };
+        } else {
+            if ("defense".equals(state)) character2.setDefending(true); // 방어 상태 ON
+            else if ("hit".equals(state) && character2.isDefending()) return; // 방어 상태 중 hit 방지
+
+            // 상태 처리
+            currentImage2 = switch (state) {
+                case "attack1" -> character2.getAttack1Image();
+                case "attack2" -> character2.getAttack2Image();
+                case "heal" -> character2.getHealImage();
+                case "defense" -> character2.getDefenseImage();
+                case "hit" -> character2.getHitImage();
+                default -> playerImage2;
+            };
+        }
+        repaint();
+
+        // 상태 복원 타이머
+        if (!"defense".equals(state)) {
+            Timer stateRestoreTimer = new Timer(3000, e -> {
+                if (isCharacter1) {
+                    currentImage1 = playerImage1;
+                } else {
+                    currentImage2 = playerImage2;
+                }
+                repaint();
+                executeAction(); // 다음 동작 실행
+                ((Timer) e.getSource()).stop();
+            });
+            stateRestoreTimer.setRepeats(false);
+            stateRestoreTimer.start();
+        }
     }
 
-    public void keyTyped(KeyEvent e) {}
+    private int getCardPriority(Card card) {
+        return switch (card.getCardData().getCardType()) {
+            case DEFENSE -> 1;
+            case MOVE -> 2;
+            case ATTACK1 -> 3;
+            case ATTACK2 -> 4; // ATTACK2 우선순위 명시
+            case HEAL -> 5;
+            default -> 6;
+        };
+    }
+
+    private boolean isValidGridPosition(Point p) {
+        return p.x >= 0 && p.x < GRID_COLUMNS && p.y >= 0 && p.y < GRID_ROWS;
+    }
+
+    private void clearAttackTiles(List<Point> attackRange) {
+        for (Point p : attackRange) {
+            if (isValidGridPosition(p)) {
+                gridColors[p.y][p.x] = Color.LIGHT_GRAY; // 기본 색상으로 초기화
+            }
+        }
+    }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Grid Movement with GIF Swap");
+        JFrame frame = new JFrame("PlayField Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Character inuyasha = new Character(
@@ -228,17 +434,36 @@ public class PlayField extends JPanel implements ActionListener, KeyListener {
                 "src/main/resources/animations/characters/이누야샤방어.gif",
                 "src/main/resources/animations/cards/이누야샤초가공격200x160.gif",
                 "src/main/resources/animations/cards/이누야샤기본공격200x160.gif",
-                "src/main/resources/animations/characters/이누야샤방어.gif",
-                new Point(0, 0)
+                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
+                new Point(0, 1)
         );
-        PlayField gamePanel = new PlayField(inuyasha);
 
+        Character kagome = new Character(
+                "Kagome",
+                "src/main/resources/animations/cards/이누야샤기본모션200x160.gif",
+                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
+                "src/main/resources/animations/characters/이누야샤힐.gif",
+                "src/main/resources/animations/characters/이누야샤방어.gif",
+                "src/main/resources/animations/cards/이누야샤초가공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤기본공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
+                new Point(3, 1)
+        );
+
+        // 캐릭터 카드 큐에 카드 추가
+        inuyasha.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "src/main/resources/cards/card2.png", "", false, MoveDirection.RIGHT, null)));
+        inuyasha.addCard(new Card(new CardData(CardType.ATTACK1, 10, 5, "src/main/resources/cards/card1.png", "", false, null, AttackShape.HORIZONTAL)));
+        inuyasha.addCard(new Card(new CardData(CardType.ATTACK2, 10, 5, "src/main/resources/cards/card1.png", "", false, null, AttackShape.HORIZONTAL)));
+
+        kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 3, "src/main/resources/cards/card3.png", "", false, null, null)));
+        kagome.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "src/main/resources/cards/card4.png", "", false, MoveDirection.LEFT, null)));
+        kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 0, "src/main/resources/cards/card4.png", "", false, null, null)));
+
+        PlayField gamePanel = new PlayField(inuyasha, kagome);
 
         frame.add(gamePanel);
-
-        frame.setSize(1000, 600); // 4:3 비율에 맞춘 필드 크기
+        frame.setSize(1000, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        gamePanel.requestFocusInWindow();
     }
 }

@@ -44,8 +44,8 @@ public class SceneCard {
 
     // 카드 뒤집히는 애니메이션 처리
     private void rotateCard() {
-        final int totalSteps = 20; // 애니메이션 단계 수
-        final int delay = 25;      // 각 단계당 지연 시간(ms)
+        final int totalSteps = 50; // 0.5초 동안 진행되는 애니메이션 단계 수
+        final int delay = 10;       // 각 단계당 지연 시간(ms) (0.5초 동안 끝내기 위해)
         final int[] currentStep = {0}; // 현재 애니메이션 단계 추적
 
         Timer timer = new Timer();
@@ -71,6 +71,8 @@ public class SceneCard {
                 // 애니메이션 종료 조건
                 if (currentStep[0] >= totalSteps) {
                     timer.cancel(); // 타이머 종료
+                    // 카드가 뒤집힌 후 대기 애니메이션 호출
+                    waitForFurtherAction();
                 }
 
                 // UI 업데이트
@@ -78,7 +80,24 @@ public class SceneCard {
             }
         };
 
-        // 타이머로 애니메이션 실행
+        // 타이머로 애니메이션 실행 (0.5초 동안)
         timer.scheduleAtFixedRate(task, 0, delay);
+    }
+
+    // 카드가 뒤집힌 후 7.5초 대기
+    private void waitForFurtherAction() {
+        // 7.5초 대기
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                // 대기 시간이 끝난 후 추가적인 동작을 진행할 수 있음
+                // 예시: 추가 작업이나 애니메이션 등
+                // 대기 후 처리할 작업을 넣어주세요.
+            }
+        };
+
+        // 7.5초 동안 대기 (7500ms)
+        timer.schedule(task, 15000);
     }
 }
