@@ -45,7 +45,7 @@ public class Character {
 
         // 기본 체력과 스태미나 값 설정
         this.maxHealth = 100;
-        this.maxStamina = 50;
+        this.maxStamina = 100;
         this.health = maxHealth;
         this.stamina = maxStamina;
     }
