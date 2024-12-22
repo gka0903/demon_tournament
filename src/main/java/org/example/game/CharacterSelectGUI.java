@@ -2,6 +2,7 @@ package org.example.game;
 
 import org.example.card.Card;
 import org.example.characterEnum.CharacterCardList;
+import org.example.game.CardSelectionAndChatView;
 import org.example.select.VSAnimation;
 
 import javax.swing.*;
@@ -19,10 +20,17 @@ public class CharacterSelectGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
 
+        // 배경 이미지 추가
+        JLabel backgroundLabel = new JLabel(new ImageIcon(new ImageIcon("src/main/resources/animations/select/배경화면.jpg").getImage().getScaledInstance(800, 600, Image.SCALE_SMOOTH)));
+        backgroundLabel.setBounds(0, 0, 800, 600);
+        add(backgroundLabel);
+
+        // 제목 라벨 꾸미기
         JLabel instructionLabel = new JLabel("Select a Character", SwingConstants.CENTER);
-        instructionLabel.setFont(new Font("Serif", Font.BOLD, 24));
-        instructionLabel.setBounds(250, 20, 300, 40);
-        add(instructionLabel);
+        instructionLabel.setFont(new Font("Serif", Font.BOLD, 36));
+        instructionLabel.setForeground(Color.WHITE);
+        instructionLabel.setBounds(200, 20, 400, 50);
+        backgroundLabel.add(instructionLabel); // 배경 위에 추가
 
         String[] characters = {"INUYASHA", "SESSHOMARU"};
         String[] imagePaths = {
@@ -33,7 +41,7 @@ public class CharacterSelectGUI extends JFrame {
         JButton[] characterButtons = new JButton[characters.length];
         int buttonSize = 200;
         int startX = 150;
-        int startY = 180;
+        int startY = 150;
         int gap = 300;
 
         for (int i = 0; i < characters.length; i++) {
@@ -43,6 +51,8 @@ public class CharacterSelectGUI extends JFrame {
 
             characterButtons[i] = new JButton(icon);
             characterButtons[i].setBounds(startX + (i * gap), startY, buttonSize, buttonSize);
+            characterButtons[i].setBackground(new Color(0, 0, 0, 0)); // 버튼 배경 투명
+            characterButtons[i].setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
             String characterName = characters[i];
             characterButtons[i].addActionListener(e -> {
                 try {
@@ -51,8 +61,20 @@ public class CharacterSelectGUI extends JFrame {
                     JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             });
-            add(characterButtons[i]);
+            backgroundLabel.add(characterButtons[i]); // 배경 위에 버튼 추가
         }
+
+        // 하단 패널 추가
+        JPanel footerPanel = new JPanel();
+        footerPanel.setBounds(0, 550, 800, 50);
+        footerPanel.setBackground(new Color(0, 0, 0, 150)); // 반투명 검정색
+
+        JLabel footerLabel = new JLabel("© 2024 Inuyasha Demon tournament Game");
+        footerLabel.setForeground(Color.WHITE);
+        footerLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        footerPanel.add(footerLabel);
+
+        backgroundLabel.add(footerPanel);
 
         setVisible(true);
     }
@@ -60,6 +82,7 @@ public class CharacterSelectGUI extends JFrame {
     private void playAnimation(String characterName, String serverAddress, int port) throws IOException {
         getContentPane().removeAll(); // 기존 선택 화면 제거
         repaint();
+
         JLayeredPane layeredPane = getLayeredPane();
 
         // 상대방 캐릭터 설정: 선택된 캐릭터와 다른 캐릭터로 설정
@@ -103,3 +126,4 @@ public class CharacterSelectGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new CharacterSelectGUI("127.0.0.1", 30000));
     }
 }
+
