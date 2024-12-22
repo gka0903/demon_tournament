@@ -1,9 +1,15 @@
-package org.example.test;
+package org.example.connect;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import org.example.card.Card;
+import org.example.characterEnum.CharacterCardList;
 
 public class JavaChatClientMain extends JFrame {
     private JTextField txtUserName;
@@ -42,7 +48,9 @@ public class JavaChatClientMain extends JFrame {
             String serverAddress = txtServerAddress.getText().trim();
             int port = Integer.parseInt(txtPort.getText().trim());
 
-            new org.example.test.JavaChatClientView(userName, serverAddress, port);
+            List<Card> cardList = CharacterCardList.SESSHOMARU.getCards();
+
+            new CardSelectionAndChatView(userName, serverAddress, port, cardList);
             dispose(); // Close the login window
         }
     }

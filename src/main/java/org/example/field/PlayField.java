@@ -428,25 +428,25 @@ public class PlayField extends JPanel {
 
         Character inuyasha = new Character(
                 "Inuyasha",
-                "src/main/resources/animations/cards/이누야샤기본모션200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
-                "src/main/resources/animations/characters/이누야샤힐.gif",
-                "src/main/resources/animations/characters/이누야샤방어.gif",
-                "src/main/resources/animations/cards/이누야샤초가공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤기본공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤기본모션200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤 점프200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤힐200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤방어200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤기본공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤추가공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤맞는모션200x160.gif",
                 new Point(0, 1)
         );
 
-        Character kagome = new Character(
-                "Kagome",
-                "src/main/resources/animations/cards/이누야샤기본모션200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
-                "src/main/resources/animations/characters/이누야샤힐.gif",
-                "src/main/resources/animations/characters/이누야샤방어.gif",
-                "src/main/resources/animations/cards/이누야샤초가공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤기본공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
+        Character sesshomaru = new Character(
+                "Sesshomaru",
+                "src/main/resources/animations/cards/셋쇼마루/셋쇼제자리.gif",
+                "src/main/resources/animations/cards/셋쇼마루/셋쇼점프.gif",
+                "src/main/resources/animations/cards/셋쇼마루/셋쇼힐.gif",
+                "src/main/resources/animations/cards/셋쇼마루/셋쇼방어.gif",
+                "src/main/resources/animations/cards/셋쇼마루/셋쇼공격.gif",
+                "src/main/resources/animations/cards/셋쇼마루/셋쇼추가공격.gif",
+                "src/main/resources/animations/cards/셋쇼마루/셋쇼맞음.gif",
                 new Point(3, 1)
         );
 
@@ -455,11 +455,11 @@ public class PlayField extends JPanel {
         inuyasha.addCard(new Card(new CardData(CardType.ATTACK1, 10, 5, "src/main/resources/cards/card1.png", "", false, null, AttackShape.HORIZONTAL)));
         inuyasha.addCard(new Card(new CardData(CardType.ATTACK2, 10, 5, "src/main/resources/cards/card1.png", "", false, null, AttackShape.HORIZONTAL)));
 
-        kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 3, "src/main/resources/cards/card3.png", "", false, null, null)));
-        kagome.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "src/main/resources/cards/card4.png", "", false, MoveDirection.LEFT, null)));
-        kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 0, "src/main/resources/cards/card4.png", "", false, null, null)));
+        sesshomaru.addCard(new Card(new CardData(CardType.DEFENSE, 0, 3, "src/main/resources/cards/card3.png", "", false, null, null)));
+        sesshomaru.addCard(new Card(new CardData(CardType.MOVE, 0, 0, "src/main/resources/cards/card4.png", "", false, MoveDirection.LEFT, null)));
+        sesshomaru.addCard(new Card(new CardData(CardType.DEFENSE, 0, 0, "src/main/resources/cards/card4.png", "", false, null, null)));
 
-        PlayField gamePanel = new PlayField(inuyasha, kagome);
+        PlayField gamePanel = new PlayField(inuyasha, sesshomaru);
 
         frame.add(gamePanel);
         frame.setSize(1000, 600);

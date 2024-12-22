@@ -1,21 +1,19 @@
-package org.example.test;
+package org.example.connect;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 public class JavaChatClientView extends JFrame {
     private JTextArea textArea;
-    private JTextField txtInput;
     private String userName;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
-    public JavaChatClientView(String userName, String serverAddress, int port) {
+    public JavaChatClientView(String userName, String serverAddress, int port, List<String> cardNames) {
         this.userName = userName;
 
         setTitle("Java Chat Client");
@@ -23,26 +21,22 @@ public class JavaChatClientView extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Create text area to display messages
         textArea = new JTextArea();
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         add(scrollPane, BorderLayout.CENTER);
 
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BorderLayout());
-        txtInput = new JTextField();
-        JButton btnSend = new JButton("Send");
-        inputPanel.add(txtInput, BorderLayout.CENTER);
-        inputPanel.add(btnSend, BorderLayout.EAST);
-        add(inputPanel, BorderLayout.SOUTH);
-
-        btnSend.addActionListener(new SendAction());
-        txtInput.addActionListener(new SendAction());
-
+        // Connect to server
         connectToServer(serverAddress, port);
 
+        // Send the card list to the server
+        sendCardList(cardNames);
+
+        // Start a thread to listen for incoming messages
+        new Thread(new Listener()).start();
+
         setVisible(true);
-        txtInput.requestFocus();
     }
 
     private void connectToServer(String serverAddress, int port) {
@@ -51,24 +45,23 @@ public class JavaChatClientView extends JFrame {
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            out.println(userName); // Send user name to server
-
-            new Thread(new Listener()).start();
+            // Notify the server of the user's name
+            out.println(userName + " has joined the chat.");
+            textArea.append("Connected to server.\n");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Unable to connect to server: " + e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
     }
 
-    private class SendAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String message = txtInput.getText().trim();
-            if (!message.isEmpty()) {
-                out.println(message);
-                txtInput.setText("");
-            }
+    private void sendCardList(List<String> cardNames) {
+        if (cardNames == null || cardNames.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No cards selected to send!", "Empty Selection", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+        String listString = String.join(",", cardNames);
+        out.println("Card List: " + listString);
+        textArea.append("Sent Card List: " + listString + "\n");
     }
 
     private class Listener implements Runnable {
@@ -81,7 +74,7 @@ public class JavaChatClientView extends JFrame {
                     textArea.setCaretPosition(textArea.getDocument().getLength());
                 }
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(org.example.test.JavaChatClientView.this, "Disconnected from server.", "Connection Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(JavaChatClientView.this, "Disconnected from server.", "Connection Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
             }
         }
