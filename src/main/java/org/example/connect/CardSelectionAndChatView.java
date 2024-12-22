@@ -44,7 +44,7 @@ public class CardSelectionAndChatView extends JFrame {
         this.gameManager = new GameManager(100, 100, 100, 100, new Point(0, 1), new Point(3, 1));
 
         setTitle("Card Selection and Chat");
-        setSize(800, 600);
+        setSize(1000, 640);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -387,12 +387,14 @@ public class CardSelectionAndChatView extends JFrame {
             for (int i = 0; i < cardList.size(); i++) {
                 Card card = cardList.get(i);
                 ImageIcon cardImage = card.getCardImage();
+                Image img = cardImage.getImage();
+                Image scaledImage = img.getScaledInstance(120, 150, Image.SCALE_SMOOTH); // 새로운 크기
+                JButton cardButton = new JButton(new ImageIcon(scaledImage));
 
-                JButton cardButton = new JButton(cardImage);
                 cardButton.setToolTipText("<html>Type: " + card.getCardType() +
                         "<br>DM: " + card.getCardData().getDamage() +
                         "<br>EN: " + card.getCardData().getStamina() + "</html>");
-                cardButton.setPreferredSize(new Dimension(150, 150));
+                cardButton.setPreferredSize(new Dimension(150, 180));
                 cardButton.addActionListener(new CardSelectionListener(cardButton, i));
                 cardButtons.add(cardButton);
                 cardsGrid.add(cardButton);
