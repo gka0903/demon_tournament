@@ -119,6 +119,13 @@ public class CharacterStateManager {
         return stateHistory;
     }
 
+    public Point[] getFinalPositions() {
+        return new Point[]{
+                character1.getGridPosition(),
+                character2.getGridPosition()
+        };
+    }
+
     public static void main(String[] args) {
         Character inuyasha = new Character(
                 "Inuyasha",

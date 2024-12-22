@@ -255,24 +255,14 @@ public class CardSelectionAndChatView extends JFrame {
         // PlayField 설정 (중간 50%)
         PlayField gamePanel = new PlayField(inu, sho);
 
-//        printCharacterState(inu);
-//        printCharacterState(sho);
-//
-//        StateManagerTest stateManagerTest = new StateManagerTest(inu, sho);
-//        List<int[]> statsList = stateManagerTest.getStatsList();
-
         CharacterStateManager manager = new CharacterStateManager(inu, sho);
         manager.processCards();
 
         List<int[]> statsList = manager.getStateHistory();
 
-        System.out.println("statsList = " + statsList);
+        Point[] finalPositions = manager.getFinalPositions();
 
-        for (int i = 0; i < statsList.size(); i++) {
-            int[] stats = statsList.get(i);
-            System.out.printf("Turn %d: P1[HP=%d, EN=%d], P2[HP=%d, EN=%d]%n",
-                    i, stats[0], stats[1], stats[2], stats[3]);
-        }
+        updateGameManager(gameManager, statsList, finalPositions);
 
         // Health and Energy Bar Panel 설정 (상단 20%)
         HealthEnergyBarPanel healthEnergyBarPanel = new HealthEnergyBarPanel(statsList);
@@ -321,26 +311,25 @@ public class CardSelectionAndChatView extends JFrame {
         gamePanel.requestFocusInWindow(); // PlayField에 포커스를 맞춤
     }
 
-    private void printCharacterState(Character character) {
-        System.out.printf("=== %s 상태 ===%n", character.getName());
-        System.out.printf("위치: (%d, %d)%n", character.getGridPosition().x, character.getGridPosition().y);
-
-        System.out.println("카드 리스트:");
-        List<Card> cardList = character.getCardList();
-        for (int i = 0; i < cardList.size(); i++) {
-            Card card = cardList.get(i);
-            CardData cardData = card.getCardData();
-            System.out.printf("  %d. [Type: %s, Damage: %d, Stamina: %d, Direction: %s, Shape: %s]%n",
-                    i + 1,
-                    cardData.getCardType(),
-                    cardData.getDamage(),
-                    cardData.getStamina(),
-                    cardData.getMoveDir() != null ? cardData.getMoveDir() : "N/A",
-                    cardData.getAtkShape() != null ? cardData.getAtkShape() : "N/A"
-            );
+    public void updateGameManager(GameManager gameManager, List<int[]> statsList, Point[] points) {
+        if (statsList.isEmpty() || points == null || points.length != 2) {
+            throw new IllegalArgumentException("Invalid statsList or points data");
         }
-        System.out.println("=================\n");
+
+        int[] finalStats = statsList.get(statsList.size() - 1); // 마지막 상태 가져오기
+        Point player1Position = points[0]; // 플레이어 1의 최종 위치
+        Point player2Position = points[1]; // 플레이어 2의 최종 위치
+
+        // GameManager 상태 갱신
+        gameManager.setHp1(finalStats[0]);
+        gameManager.setEn1(finalStats[1]);
+        gameManager.setP1(player1Position);
+
+        gameManager.setHp2(finalStats[2]);
+        gameManager.setEn2(finalStats[3]);
+        gameManager.setP2(player2Position);
     }
+
 
     // Inner Class for Card Selection Panel
     private class ChooseCardSelectionPanel extends JPanel {
