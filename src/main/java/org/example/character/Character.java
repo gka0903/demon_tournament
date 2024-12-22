@@ -197,4 +197,56 @@ public class Character {
     public void setDefending(boolean defending) {
         isDefending = defending;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIdleImage(Image idleImage) {
+        this.idleImage = idleImage;
+    }
+
+    public void setMoveImage(Image moveImage) {
+        this.moveImage = moveImage;
+    }
+
+    public void setHealImage(Image healImage) {
+        this.healImage = healImage;
+    }
+
+    public void setDefenseImage(Image defenseImage) {
+        this.defenseImage = defenseImage;
+    }
+
+    public void setCurrentImage(Image currentImage) {
+        this.currentImage = currentImage;
+    }
+
+    public void setHitImage(Image hitImage) {
+        this.hitImage = hitImage;
+    }
+
+    public void setAttack1Image(Image attack1Image) {
+        this.attack1Image = attack1Image;
+    }
+
+    public void setAttack2Image(Image attack2Image) {
+        this.attack2Image = attack2Image;
+    }
+
+    public void setCardList(List<Card> cardList) {
+        this.cardList = cardList;
+    }
+
+    public int getMAX_CARDS() {
+        return MAX_CARDS;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public void setStamina(int stamina) {
+        this.stamina = stamina;
+    }
 }

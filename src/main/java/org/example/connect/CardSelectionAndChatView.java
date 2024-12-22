@@ -1,5 +1,6 @@
 package org.example.connect;
 
+import java.util.Arrays;
 import org.example.card.Card;
 
 import javax.swing.*;
@@ -10,11 +11,14 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import org.example.character.Character;
 import org.example.characterEnum.CharacterCardList;
+import org.example.characterEnum.CharacterEnum;
 
 public class CardSelectionAndChatView extends JFrame {
     private JTextArea chatArea;
     private JTextField chatInput;
+    private GameManager gameManager;
     private List<JButton> cardButtons;
     private List<Card> cardList;
     private List<Card> selectedCards;
@@ -30,6 +34,7 @@ public class CardSelectionAndChatView extends JFrame {
         this.userName = userName;
         this.cardList = cardList;
         this.selectedCards = new ArrayList<>();
+        this.gameManager = new GameManager(100, 100, 100, 100, new Point(0, 1), new Point(3, 1));
 
         setTitle("Card Selection and Chat");
         setSize(800, 600);
@@ -62,7 +67,7 @@ public class CardSelectionAndChatView extends JFrame {
         // Button actions
         clearButton = cardSelectionPanel.getClearButton();
         clearButton.addActionListener(e -> cardSelectionPanel.clearSelection());
-        sendButton.addActionListener(e -> sendSelectedCards(cardSelectionPanel.getSelectedCardNames()));
+        sendButton.addActionListener(e -> sendSelectedCards(cardSelectionPanel.getSelectedCardIndexes()));
 
         new Thread(new Listener()).start();
 
@@ -83,28 +88,148 @@ public class CardSelectionAndChatView extends JFrame {
         }
     }
 
+    private Character createCharacterFromData(List<String> receivedData) {
+        // 받은 데이터가 최소 8개인지 확인 (이름, 카드 인덱스 3개, 상태 값 4개)
+        if (receivedData.size() < 8) {
+            return null;
+        }
+
+        try {
+            // 캐릭터 이름과 선택된 카드 인덱스 추출
+            String characterName = receivedData.get(0).trim();
+            List<Integer> selectedCardIndices = Arrays.asList(
+                    Integer.parseInt(receivedData.get(1).trim()), // 첫 번째 카드 인덱스
+                    Integer.parseInt(receivedData.get(2).trim()), // 두 번째 카드 인덱스
+                    Integer.parseInt(receivedData.get(3).trim())  // 세 번째 카드 인덱스
+            );
+
+            // 캐릭터 상태 값 추출 (HP, EN, x 좌표, y 좌표)
+            int hp = Integer.parseInt(receivedData.get(4).trim());
+            int en = Integer.parseInt(receivedData.get(5).trim());
+            int x = Integer.parseInt(receivedData.get(6).trim());
+            int y = Integer.parseInt(receivedData.get(7).trim());
+
+            // 캐릭터 이름에 따라 카드 리스트 가져오기
+            List<Card> allCards = CharacterCardList.valueOf(characterName.toUpperCase()).getCards();
+
+            // 선택된 카드 리스트 생성
+            List<Card> selectedCards = new ArrayList<>();
+            for (int index : selectedCardIndices) {
+                if (index >= 0 && index < allCards.size()) {
+                    selectedCards.add(allCards.get(index)); // 유효한 인덱스인 경우 추가
+                } else {
+                    throw new IllegalArgumentException("카드 인덱스가 유효하지 않습니다: " + index);
+                }
+            }
+
+            // 캐릭터 생성 및 상태 값 설정
+            Character character = CharacterEnum.getCharacterByName(characterName);
+            character.setHealth(hp); // HP 설정
+            character.setStamina(en); // EN 설정
+            character.setGridPosition(new Point(x, y)); // 위치 설정
+            for (Card card : selectedCards) { // 선택된 카드 설정
+                character.addCard(card);
+            }
+
+            return character; // 완성된 캐릭터 반환
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("캐릭터 데이터 파싱 중 오류 발생: " + receivedData, e);
+        }
+    }
+
     private void sendSelectedCards(List<String> cardNames) {
         if (cardNames.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No cards selected to send!", "Empty Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        String listString = String.join(",", cardNames);
-        out.println("Card List: " + listString);
-        chatArea.append("Sent Card List: " + listString + "\n");
+
+        // GameManager 상태를 문자열로 변환
+        String gameManagerData = String.format("%d, %d, %d, %d / %d, %d, %d, %d",
+                gameManager.getHp1(), gameManager.getEn1(), gameManager.getP1().x, gameManager.getP1().y,
+                gameManager.getHp2(), gameManager.getEn2(), gameManager.getP2().x, gameManager.getP2().y);
+
+        String[] splitData = gameManagerData.split("/");
+
+        // 플레이어 1과 플레이어 2 데이터 분리
+        String player1Data = splitData[0].trim(); // 첫 번째 데이터
+        String player2Data = splitData[1].trim(); // 두 번째 데이터
+
+        String data;
+        if (userName.equals("INUYASHA")) {
+            data = player1Data;
+        } else {
+            data = player2Data;
+        }
+
+        String listString = String.join(",", cardNames); // 카드 리스트를 쉼표로 연결
+        String message = userName + ", " + listString + ", " + data; // 유저 네임과 카드 리스트를 쉼표로 연결
+        out.println(message); // 서버로 전송
+        chatArea.append("Sent: " + message + "\n"); // 채팅창에 출력
     }
 
     private class Listener implements Runnable {
         @Override
         public void run() {
             try {
-                String message;
-                while ((message = in.readLine()) != null) {
-                    chatArea.append(message + "\n");
+                String message1 = null;
+                String message2 = null;
+
+                while ((message1 = in.readLine()) != null && (message2 = in.readLine()) != null) {
+                    if (!isValidGameData(message1) || !isValidGameData(message2)) {
+                        System.out.println("Ignored non-game message:");
+                        System.out.println("Message1: " + message1);
+                        System.out.println("Message2: " + message2);
+                        continue; // 메시지가 유효하지 않으면 무시
+                    }
+                    // 가공 예시: 리스트 두 개를 합쳐 새 리스트 생성
+                    List<String> list1 = Arrays.asList(message1.split(","));
+                    List<String> list2 = Arrays.asList(message2.split(","));
+
+                    Character inu, sho;
+
+                    System.out.println("list1 = " + list1);
+                    System.out.println("list2 = " + list2);
+
+                    if (list1.get(0).equals("INUYASHA")) {
+                        inu = createCharacterFromData(list1);
+                        sho = createCharacterFromData(list2);
+                    } else {
+                        inu = createCharacterFromData(list2);
+                        sho = createCharacterFromData(list1);
+                    }
+
+                    // 새로운 리스트로 가공
+                    List<String> combinedList = new ArrayList<>(list1);
+                    combinedList.addAll(list2);
+
+                    // UI에 표시
+                    chatArea.append("Combined List: " + String.join(", ", combinedList) + "\n");
                     chatArea.setCaretPosition(chatArea.getDocument().getLength());
                 }
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(CardSelectionAndChatView.this, "Disconnected from server.", "Connection Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
+            }
+        }
+
+        private boolean isValidGameData(String message) {
+            // ','로 분리 후 8개 이상의 데이터가 있어야 유효
+            String[] parts = message.split(",");
+            if (parts.length < 8) {
+                return false; // 데이터가 8개 미만이면 유효하지 않음
+            }
+            try {
+                // 첫 번째 값이 캐릭터 이름인지 확인 (INUYASHA, SESSHOMARU 등)
+                String characterName = parts[0].trim();
+                CharacterEnum.valueOf(characterName.toUpperCase()); // Enum으로 변환 가능 여부 확인
+
+                // 숫자 값 확인 (카드 인덱스 및 상태 값)
+                for (int i = 1; i < 8; i++) {
+                    Integer.parseInt(parts[i].trim()); // 정수 변환 시도
+                }
+                return true; // 모든 조건 충족 시 유효
+            } catch (IllegalArgumentException e) {
+                return false; // 변환 실패 시 유효하지 않음
             }
         }
     }
@@ -220,12 +345,15 @@ public class CardSelectionAndChatView extends JFrame {
             updateCardSlots();
         }
 
-        public List<String> getSelectedCardNames() {
-            List<String> cardNames = new ArrayList<>();
+        public List<String> getSelectedCardIndexes() {
+            List<String> cardIndexes = new ArrayList<>();
             for (Card card : selectedCards) {
-                cardNames.add(card.getCardType().toString());
+                int index = cardList.indexOf(card); // 카드 리스트에서 인덱스 찾기
+                if (index >= 0) {
+                    cardIndexes.add(String.valueOf(index)); // 정수를 문자열로 변환하여 추가
+                }
             }
-            return cardNames;
+            return cardIndexes;
         }
 
         public JButton getClearButton() {
