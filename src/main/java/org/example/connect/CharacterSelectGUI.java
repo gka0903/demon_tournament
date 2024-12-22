@@ -2,6 +2,7 @@ package org.example.connect;
 
 import org.example.card.Card;
 import org.example.characterEnum.CharacterCardList;
+import org.example.select.VSAnimation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,7 +46,7 @@ public class CharacterSelectGUI extends JFrame {
             String characterName = characters[i];
             characterButtons[i].addActionListener(e -> {
                 try {
-                    connectToServer(serverAddress, port, characterName);
+                    playAnimation(characterName, serverAddress, port);
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -55,6 +56,35 @@ public class CharacterSelectGUI extends JFrame {
 
         setVisible(true);
     }
+
+    private void playAnimation(String characterName, String serverAddress, int port) throws IOException {
+        getContentPane().removeAll(); // 기존 선택 화면 제거
+        repaint();
+        JLayeredPane layeredPane = getLayeredPane();
+
+        // 상대방 캐릭터 설정: 선택된 캐릭터와 다른 캐릭터로 설정
+        String opponentCharacter = characterName.equals("INUYASHA") ? "SESSHOMARU" : "INUYASHA";
+
+        // 애니메이션 추가
+        Container animationContainer = new Container();
+        animationContainer.setLayout(null);
+        animationContainer.setBounds(0, 0, getWidth(), getHeight());
+        new VSAnimation(animationContainer,
+                "src/main/resources/animations/select/" + characterName.toLowerCase() + "1.jpeg",
+                "src/main/resources/animations/select/" + opponentCharacter.toLowerCase() + "2.jpeg");
+        layeredPane.add(animationContainer, JLayeredPane.POPUP_LAYER);
+
+        Timer closeTimer = new Timer(3000, e -> {
+            try {
+                connectToServer(serverAddress, port, characterName);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        closeTimer.setRepeats(false);
+        closeTimer.start();
+    }
+
 
     private void connectToServer(String serverAddress, int port, String characterName) throws IOException {
         // 서버 연결

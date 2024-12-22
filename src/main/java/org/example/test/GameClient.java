@@ -22,7 +22,7 @@ public class GameClient {
 
         new Thread(() -> {
             try {
-                Socket socket = new Socket("127.0.0.1", 30000);
+                Socket socket = new Socket("127.0.0.1", 30001);
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
@@ -36,4 +36,3 @@ public class GameClient {
         }).start();
     }
 }
-

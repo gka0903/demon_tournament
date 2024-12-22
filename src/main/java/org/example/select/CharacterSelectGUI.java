@@ -26,7 +26,7 @@ public class CharacterSelectGUI extends JFrame {
         instructionLabel.setBounds(250, 20, 300, 40);
         add(instructionLabel);
 
-        String[] characters = {"Inuyasha", "Sesshomaru"};
+        String[] characters = {"INUYASHA", "SESSHOMARU"};
         String[] imagePaths = {
                 "src/main/resources/animations/select/inuyasha.png",
                 "src/main/resources/animations/select/maru.png"
@@ -71,13 +71,9 @@ public class CharacterSelectGUI extends JFrame {
             getContentPane().setLayout(null);
 
             // VSAnimation 추가
-            new VSAnimation(getContentPane(),
-                    "src/main/resources/animations/select/" + character.toLowerCase() + "1.jpeg",
-                    "src/main/resources/animations/select/" + opponentCharacter.toLowerCase() + "2.jpeg");
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 }
-

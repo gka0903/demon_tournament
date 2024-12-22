@@ -26,7 +26,7 @@ public class GameServer extends JFrame {
     }
 
     private void startServer() {
-        try (ServerSocket serverSocket = new ServerSocket(30000)) {
+        try (ServerSocket serverSocket = new ServerSocket(30001)) {
             log("Server is running...");
 
             // 두 클라이언트 연결
@@ -76,6 +76,7 @@ public class GameServer extends JFrame {
     private void log(String message) {
         SwingUtilities.invokeLater(() -> logArea.append(message + "\n"));
     }
+
 
     public static void main(String[] args) {
         new GameServer();
