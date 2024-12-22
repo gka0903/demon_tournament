@@ -342,12 +342,10 @@ public class CardSelectionAndChatView extends JFrame {
             this.selectedCards = new ArrayList<>();
             setLayout(new BorderLayout());
 
-            // Card grid panel
             JPanel cardsGrid = new JPanel(new GridLayout(2, 4));
             cardButtons = new ArrayList<>();
             initCards(cardsGrid);
 
-            // Panel for card slots and buttons
             JPanel bottomPanel = new JPanel(new BorderLayout());
 
             JPanel cardSlotPanel = new JPanel(new GridLayout(1, 3, 10, 0));
