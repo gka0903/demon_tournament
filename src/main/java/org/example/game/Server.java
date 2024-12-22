@@ -32,12 +32,11 @@ public class Server {
         } else if (secondClientData == null) {
             secondClientData = clientData;
 
-            // Broadcast both data strings to all clients
             for (ClientHandler client : clients) {
                 client.sendData(firstClientData, secondClientData);
             }
 
-            // Reset for next round
+            // 리셋
             firstClientData = null;
             secondClientData = null;
         }
@@ -58,7 +57,7 @@ public class Server {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                // Read and process incoming data
+                // 데이터 받기
                 String receivedData;
                 while ((receivedData = in.readLine()) != null) {
                     System.out.println("Received data from client: " + receivedData);
