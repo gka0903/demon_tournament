@@ -32,25 +32,25 @@ public class Field {
         // 캐릭터 설정
         Character inuyasha = new Character(
                 "Inuyasha",
-                "src/main/resources/animations/cards/이누야샤기본모션200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
-                "src/main/resources/animations/characters/이누야샤힐.gif",
-                "src/main/resources/animations/characters/이누야샤방어.gif",
-                "src/main/resources/animations/cards/이누야샤초가공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤기본공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤기본모션200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤 점프200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤힐200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤방어200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤기본공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤추가공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤맞는모션200x160.gif",
                 new Point(1, 1)
         );
 
         Character kagome = new Character(
                 "Kagome",
-                "src/main/resources/animations/cards/이누야샤기본모션200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
-                "src/main/resources/animations/characters/이누야샤힐.gif",
-                "src/main/resources/animations/characters/이누야샤방어.gif",
-                "src/main/resources/animations/cards/이누야샤초가공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤기본공격200x160.gif",
-                "src/main/resources/animations/cards/이누야샤 점프200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤기본모션200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤 점프200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤힐200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤방어200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤기본공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤추가공격200x160.gif",
+                "src/main/resources/animations/cards/이누야샤/이누야샤맞는모션200x160.gif",
                 new Point(3, 1)
         );
 

@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class VSAnimation {
+public class VSAnimation {
     private JLabel playerImage, opponentImage, fightImage;
     private Timer playerTimer, opponentTimer;
     private int playerX = -200; // 내 캐릭터 시작 위치
@@ -70,4 +70,3 @@ class VSAnimation {
         c.repaint();
     }
 }
-

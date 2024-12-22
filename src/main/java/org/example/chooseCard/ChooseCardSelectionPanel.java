@@ -1,8 +1,6 @@
-package org.example.field;
+package org.example.chooseCard;
 
-import org.example.card.AttackShape;
 import org.example.card.Card;
-import org.example.card.CardData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.card.CardType;
+import org.example.characterEnum.CharacterCardList;
 
 public class ChooseCardSelectionPanel extends JPanel {
     private List<JButton> cardButtons;
@@ -126,6 +124,16 @@ public class ChooseCardSelectionPanel extends JPanel {
         }
     }
 
+    // 내부에 추가될 메서드
+    private List<String> getSelectedCardNames() {
+        List<String> cardNames = new ArrayList<>();
+        for (Card card : selectedCards) {
+            cardNames.add(card.getCardType().toString()); // 카드 이름 가져오기
+        }
+        return cardNames;
+    }
+
+
     // Update card slots with selected cards
     private void updateCardSlots() {
         for (int i = 0; i < 3; i++) {
@@ -155,34 +163,28 @@ public class ChooseCardSelectionPanel extends JPanel {
     }
 
     // Display selected cards when "Continue" is clicked
+    // displaySelectedCards 메서드 수정
     private void displaySelectedCards() {
         if (selectedCards.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No cards selected!", "Empty Selection", JOptionPane.WARNING_MESSAGE);
         } else {
+            // 선택된 카드 이름 리스트 생성
+            List<String> cardNames = getSelectedCardNames();
             StringBuilder message = new StringBuilder("Selected Cards:\n");
-            for (Card card : selectedCards) {
-                message.append("Type: ").append(card.getCardType())
-                        .append(", Damage: ").append(card.getCardData().getDamage())
-                        .append(", Stamina: ").append(card.getCardData().getStamina())
-                        .append("\n");
+            for (String cardName : cardNames) {
+                message.append(cardName).append("\n");
             }
             JOptionPane.showMessageDialog(null, message.toString(), "Selected Cards", JOptionPane.INFORMATION_MESSAGE);
+
+            // 카드 이름 리스트 출력 (디버깅용)
+            System.out.println("Selected Card Names: " + cardNames);
         }
     }
 
     public static void main(String[] args) {
-        // Create test card data
-        CardData cardData1 = new CardData(CardType.ATTACK1, 10, 5, "src/main/resources/animations/cards/test1.png", "src/main/resources/animations/cards/back.png", false, null, AttackShape.CROSS);
-        CardData cardData2 = new CardData(CardType.DEFENSE, 8, 6, "src/main/resources/animations/cards/test2.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData3 = new CardData(CardType.ATTACK2, 12, 7, "src/main/resources/animations/cards/test3.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData4 = new CardData(CardType.DEFENSE, 6, 4, "src/main/resources/animations/cards/test4.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData5 = new CardData(CardType.ATTACK1, 20, 10, "src/main/resources/animations/cards/test5.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData6 = new CardData(CardType.DEFENSE, 18, 9, "src/main/resources/animations/cards/test6.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData7 = new CardData(CardType.ATTACK2, 15, 7, "src/main/resources/animations/cards/test7.png", "src/main/resources/animations/cards/back.png", false, null, null);
-        CardData cardData8 = new CardData(CardType.DEFENSE, 10, 5, "src/main/resources/animations/cards/test8.png", "src/main/resources/animations/cards/back.png", false, null, null);
 
-        List<Card> cardList = List.of(new Card(cardData1), new Card(cardData2), new Card(cardData3), new Card(cardData4),
-                new Card(cardData5), new Card(cardData6), new Card(cardData7), new Card(cardData8));
+//        List<Card> cardList = CharacterCardList.INUYASHA.getCards();
+        List<Card> cardList = CharacterCardList.SESSHOMARU.getCards();
 
         JFrame frame = new JFrame("Card Selection Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

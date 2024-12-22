@@ -15,7 +15,6 @@ public class AttackCard extends Card {
         switch (cardData.getAtkShape()) {
             case VERTICAL:
                 return excludeOverRangeCoordList(playerCard, List.of(
-                        new Point(0, -1),
                         new Point(0, 0),
                         new Point(0, 1)
                 ));
