@@ -1,6 +1,9 @@
 package org.example.connect;
 
 import java.util.Arrays;
+import java.util.Collections;
+import org.example.card.AttackCard;
+import org.example.card.AttackShape;
 import org.example.card.Card;
 
 import javax.swing.*;
@@ -11,9 +14,16 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import org.example.card.CardData;
+import org.example.card.CardType;
+import org.example.card.MoveDirection;
 import org.example.character.Character;
 import org.example.characterEnum.CharacterCardList;
 import org.example.characterEnum.CharacterEnum;
+import org.example.field.PlayField;
+import org.example.field.SceneCardPanel;
+import org.example.select.HealthEnergyBarPanel;
+import org.example.test.StateManager;
 
 public class CardSelectionAndChatView extends JFrame {
     private JTextArea chatArea;
@@ -23,6 +33,7 @@ public class CardSelectionAndChatView extends JFrame {
     private List<Card> cardList;
     private List<Card> selectedCards;
     private JLabel[] cardSlots;
+    private ChooseCardSelectionPanel cardSelectionPanel;
     private JButton clearButton;
     private JButton sendButton;
     private Socket socket;
@@ -42,7 +53,7 @@ public class CardSelectionAndChatView extends JFrame {
         setLayout(new BorderLayout());
 
         // Card Selection Panel
-        ChooseCardSelectionPanel cardSelectionPanel = new ChooseCardSelectionPanel(cardList);
+        cardSelectionPanel = new ChooseCardSelectionPanel(cardList);
         add(cardSelectionPanel, BorderLayout.NORTH);
 
         // Chat Panel
@@ -198,6 +209,8 @@ public class CardSelectionAndChatView extends JFrame {
                         sho = createCharacterFromData(list1);
                     }
 
+                    animation(inu, sho, cardSelectionPanel);
+
                     // 새로운 리스트로 가공
                     List<String> combinedList = new ArrayList<>(list1);
                     combinedList.addAll(list2);
@@ -232,6 +245,74 @@ public class CardSelectionAndChatView extends JFrame {
                 return false; // 변환 실패 시 유효하지 않음
             }
         }
+    }
+
+    public void animation(Character inu, Character sho, ChooseCardSelectionPanel cardSelectionPanel) {
+        // 메인 프레임 생성
+        JFrame frame = new JFrame("Grid Movement with GIF Swap and SceneCard Animation Test");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1600, 800); // 화면 크기 설정 (너비 100%, 높이 80%)
+
+        // 프레임의 레이아웃을 BoxLayout으로 설정 (세로 방향)
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+        // PlayField 설정 (중간 50%)
+        PlayField gamePanel = new PlayField(inu, sho);
+
+        org.example.test.StateManager stateManager = new StateManager(inu, sho);
+        List<int[]> statsList = stateManager.getStatsList();
+
+        for (int i = 0; i < statsList.size(); i++) {
+            int[] stats = statsList.get(i);
+            System.out.printf("Turn %d: P1[HP=%d, EN=%d], P2[HP=%d, EN=%d]%n",
+                    i, stats[0], stats[1], stats[2], stats[3]);
+        }
+
+        // Health and Energy Bar Panel 설정 (상단 20%)
+        HealthEnergyBarPanel healthEnergyBarPanel = new HealthEnergyBarPanel(statsList);
+        healthEnergyBarPanel.setMaximumSize(new Dimension(frame.getWidth(), (int) (frame.getHeight() * 0.2)));
+
+        gamePanel.setMaximumSize(new Dimension(frame.getWidth(), (int) (frame.getHeight() * 0.5)));
+
+        System.out.println("inu.getCardList() = " + inu.getCardList());
+        System.out.println("sho.getCardList() = " + sho.getCardList());
+
+        List<Card> reversedInuCardList = new ArrayList<>(inu.getCardList());
+        Collections.reverse(reversedInuCardList);
+
+        // SceneCardPanel 설정 (하단 30%)
+        SceneCardPanel sceneCardPanel = new SceneCardPanel();
+        sceneCardPanel.initializeSceneCards(reversedInuCardList, sho.getCardList());
+        sceneCardPanel.setMaximumSize(new Dimension(frame.getWidth(), (int) (frame.getHeight() * 0.25)));
+
+        // "Return to Card Selection" 버튼 추가
+        JButton returnToSelectionButton = new JButton("Return to Card Selection");
+        returnToSelectionButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        returnToSelectionButton.setPreferredSize(new Dimension(150, 40)); // 적절한 크기 설정
+        returnToSelectionButton.addActionListener(e -> {
+            frame.dispose(); // 애니메이션 창 닫기
+            setVisible(true); // 카드 선택 창 다시 표시
+            cardSelectionPanel.clearSelection(); // 카드 선택 초기화
+        });
+
+        // 24초 후 버튼 활성화
+        Timer enableButtonTimer = new Timer(24000, e -> returnToSelectionButton.setEnabled(true));
+        enableButtonTimer.setRepeats(false); // 한 번만 실행
+        enableButtonTimer.start();
+
+        // 패널에 여백 제거
+        gamePanel.setBorder(BorderFactory.createEmptyBorder());
+        sceneCardPanel.setBorder(BorderFactory.createEmptyBorder());
+
+        // 패널을 프레임에 추가
+        frame.add(healthEnergyBarPanel); // 상단 패널
+        frame.add(gamePanel); // 중간 패널
+        frame.add(sceneCardPanel); // 하단 패널
+        frame.add(returnToSelectionButton); // 버튼 추가
+
+        // 프레임 표시
+        frame.setVisible(true);
+        gamePanel.requestFocusInWindow(); // PlayField에 포커스를 맞춤
     }
 
     // Inner Class for Card Selection Panel
@@ -362,6 +443,7 @@ public class CardSelectionAndChatView extends JFrame {
     }
 
     public static void main(String[] args) {
+
         List<Card> cardList = CharacterCardList.SESSHOMARU.getCards();
         new CardSelectionAndChatView("Player1", "127.0.0.1", 30000, cardList);
     }

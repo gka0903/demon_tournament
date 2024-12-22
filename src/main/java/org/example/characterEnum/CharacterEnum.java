@@ -6,7 +6,7 @@ import java.awt.Point;
 
 public enum CharacterEnum {
     INUYASHA(
-            "Inuyasha",
+            "INUYASHA",
             "src/main/resources/animations/cards/이누야샤/이누야샤기본모션200x160.gif",
             "src/main/resources/animations/cards/이누야샤/이누야샤 점프200x160.gif",
             "src/main/resources/animations/cards/이누야샤/이누야샤힐200x160.gif",
@@ -14,10 +14,10 @@ public enum CharacterEnum {
             "src/main/resources/animations/cards/이누야샤/이누야샤추가공격200x160.gif",
             "src/main/resources/animations/cards/이누야샤/이누야샤기본공격200x160.gif",
             "src/main/resources/animations/cards/이누야샤/이누야샤맞는모션200x160.gif",
-            new Point(1, 1)
+            new Point(0, 1)
     ),
     SESSHOMARU(
-            "Sesshomaru",
+            "SESSHOMARU",
             "src/main/resources/animations/cards/셋쇼마루/셋쇼제자리.gif",
             "src/main/resources/animations/cards/셋쇼마루/셋쇼점프.gif",
             "src/main/resources/animations/cards/셋쇼마루/셋쇼힐.gif",
