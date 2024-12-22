@@ -46,11 +46,9 @@ public class CardSelectionAndChatView extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Card Selection Panel
         cardSelectionPanel = new ChooseCardSelectionPanel(cardList);
         add(cardSelectionPanel, BorderLayout.NORTH);
 
-        // Chat Panel
         JPanel chatPanel = new JPanel(new BorderLayout());
         chatArea = new JTextArea();
         chatArea.setEditable(false);
@@ -66,10 +64,9 @@ public class CardSelectionAndChatView extends JFrame {
 
         add(chatPanel, BorderLayout.CENTER);
 
-        // Server connection
+        // 서버 연결
         connectToServer(serverAddress, port);
 
-        // Button actions
         clearButton = cardSelectionPanel.getClearButton();
         clearButton.addActionListener(e -> cardSelectionPanel.clearSelection());
         sendButton.addActionListener(e -> sendSelectedCards(cardSelectionPanel.getSelectedCardIndexes()));
@@ -209,7 +206,6 @@ public class CardSelectionAndChatView extends JFrame {
                     List<String> combinedList = new ArrayList<>(list1);
                     combinedList.addAll(list2);
 
-                    // UI에 표시
                     chatArea.append("Combined List: " + String.join(", ", combinedList) + "\n");
                     chatArea.setCaretPosition(chatArea.getDocument().getLength());
                 }
