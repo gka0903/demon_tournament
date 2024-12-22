@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class JavaChatServer {
+public class Server {
     private static final int PORT = 30000; // 기본 포트 번호
     private static Set<ClientHandler> clients = new HashSet<>();
     private static String firstClientData = null; // 첫 번째 클라이언트 데이터

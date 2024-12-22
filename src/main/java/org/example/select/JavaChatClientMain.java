@@ -1,4 +1,4 @@
-package org.example.connect;
+package org.example.select;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.example.card.Card;
 import org.example.characterEnum.CharacterCardList;
+import org.example.connect.CardSelectionAndChatView;
 
 public class JavaChatClientMain extends JFrame {
     private JTextField txtUserName;

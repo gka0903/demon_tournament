@@ -1,4 +1,4 @@
-package org.example.connect;
+package org.example.select;
 
 import javax.swing.*;
 import java.awt.*;

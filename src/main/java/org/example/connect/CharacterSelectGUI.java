@@ -32,8 +32,8 @@ public class CharacterSelectGUI extends JFrame {
 
         JButton[] characterButtons = new JButton[characters.length];
         int buttonSize = 200;
-        int startX = 200;
-        int startY = 200;
+        int startX = 150;
+        int startY = 180;
         int gap = 300;
 
         for (int i = 0; i < characters.length; i++) {
