@@ -1,4 +1,4 @@
-package org.example.connect;
+package org.example.game;
 
 import org.example.card.Card;
 import org.example.characterEnum.CharacterCardList;

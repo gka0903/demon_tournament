@@ -1,4 +1,4 @@
-package org.example.connect;
+package org.example.game;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,14 +12,12 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.card.CardData;
 import org.example.character.Character;
 import org.example.characterEnum.CharacterCardList;
 import org.example.characterEnum.CharacterEnum;
 import org.example.field.PlayField;
 import org.example.field.SceneCardPanel;
 import org.example.select.HealthEnergyBarPanel;
-import org.example.test.StateManagerTest;
 
 public class CardSelectionAndChatView extends JFrame {
     private JTextArea chatArea;
@@ -48,11 +46,9 @@ public class CardSelectionAndChatView extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Card Selection Panel
         cardSelectionPanel = new ChooseCardSelectionPanel(cardList);
         add(cardSelectionPanel, BorderLayout.NORTH);
 
-        // Chat Panel
         JPanel chatPanel = new JPanel(new BorderLayout());
         chatArea = new JTextArea();
         chatArea.setEditable(false);
@@ -68,10 +64,9 @@ public class CardSelectionAndChatView extends JFrame {
 
         add(chatPanel, BorderLayout.CENTER);
 
-        // Server connection
+        // 서버 연결
         connectToServer(serverAddress, port);
 
-        // Button actions
         clearButton = cardSelectionPanel.getClearButton();
         clearButton.addActionListener(e -> cardSelectionPanel.clearSelection());
         sendButton.addActionListener(e -> sendSelectedCards(cardSelectionPanel.getSelectedCardIndexes()));
@@ -211,7 +206,6 @@ public class CardSelectionAndChatView extends JFrame {
                     List<String> combinedList = new ArrayList<>(list1);
                     combinedList.addAll(list2);
 
-                    // UI에 표시
                     chatArea.append("Combined List: " + String.join(", ", combinedList) + "\n");
                     chatArea.setCaretPosition(chatArea.getDocument().getLength());
                 }
@@ -344,12 +338,10 @@ public class CardSelectionAndChatView extends JFrame {
             this.selectedCards = new ArrayList<>();
             setLayout(new BorderLayout());
 
-            // Card grid panel
             JPanel cardsGrid = new JPanel(new GridLayout(2, 4));
             cardButtons = new ArrayList<>();
             initCards(cardsGrid);
 
-            // Panel for card slots and buttons
             JPanel bottomPanel = new JPanel(new BorderLayout());
 
             JPanel cardSlotPanel = new JPanel(new GridLayout(1, 3, 10, 0));

@@ -1,4 +1,4 @@
-package org.example.connect;
+package org.example.game;
 
 import org.example.card.*;
 import org.example.character.Character;
