@@ -13,7 +13,7 @@ public class HealthEnergyBarPanel extends JPanel {
     public HealthEnergyBarPanel(List<int[]> statsList) {
         // Load images using class loader
         playerImage = Toolkit.getDefaultToolkit().createImage(getClass().getResource("/animations/select/inuyasha.png"));
-        opponentImage = Toolkit.getDefaultToolkit().createImage(getClass().getResource("/animations/select/kagome.png"));
+        opponentImage = Toolkit.getDefaultToolkit().createImage(getClass().getResource("/animations/select/maru.png"));
 
         // Convert statsList to mutable list
         List<int[]> mutableStatsList = new ArrayList<>(statsList);
