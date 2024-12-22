@@ -1,4 +1,4 @@
-package org.example.connect;
+package org.example.game;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,14 +12,12 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.card.CardData;
 import org.example.character.Character;
 import org.example.characterEnum.CharacterCardList;
 import org.example.characterEnum.CharacterEnum;
 import org.example.field.PlayField;
 import org.example.field.SceneCardPanel;
 import org.example.select.HealthEnergyBarPanel;
-import org.example.test.StateManagerTest;
 
 public class CardSelectionAndChatView extends JFrame {
     private JTextArea chatArea;

@@ -1,12 +1,14 @@
-package org.example.test;
+package org.example.game;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class JavaChatServer {
+public class Server {
     private static final int PORT = 30000; // 기본 포트 번호
     private static Set<ClientHandler> clients = new HashSet<>();
+    private static String firstClientData = null; // 첫 번째 클라이언트 데이터
+    private static String secondClientData = null; // 두 번째 클라이언트 데이터
 
     public static void main(String[] args) {
         System.out.println("Chat server started...");
@@ -24,11 +26,20 @@ public class JavaChatServer {
         }
     }
 
-    public static void broadcast(String message, ClientHandler excludeClient) {
-        for (ClientHandler client : clients) {
-            if (client != excludeClient) {
-                client.sendMessage(message);
+    public synchronized static void receiveData(String clientData, ClientHandler sender) {
+        if (firstClientData == null) {
+            firstClientData = clientData;
+        } else if (secondClientData == null) {
+            secondClientData = clientData;
+
+            // Broadcast both data strings to all clients
+            for (ClientHandler client : clients) {
+                client.sendData(firstClientData, secondClientData);
             }
+
+            // Reset for next round
+            firstClientData = null;
+            secondClientData = null;
         }
     }
 
@@ -47,14 +58,11 @@ public class JavaChatServer {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                String userName = in.readLine();
-                System.out.println("User connected: " + userName);
-                broadcast(userName + " joined the chat.", this);
-
-                String message;
-                while ((message = in.readLine()) != null) {
-                    System.out.println(userName + ": " + message);
-                    broadcast(userName + ": " + message, this);
+                // Read and process incoming data
+                String receivedData;
+                while ((receivedData = in.readLine()) != null) {
+                    System.out.println("Received data from client: " + receivedData);
+                    receiveData(receivedData, this);
                 }
             } catch (IOException e) {
                 System.err.println("Error handling client: " + e.getMessage());
@@ -69,8 +77,9 @@ public class JavaChatServer {
             }
         }
 
-        public void sendMessage(String message) {
-            out.println(message);
+        public void sendData(String data1, String data2) {
+            out.println(data1);
+            out.println(data2);
         }
     }
 }

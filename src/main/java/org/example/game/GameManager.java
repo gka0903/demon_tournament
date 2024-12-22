@@ -1,4 +1,4 @@
-package org.example.connect;
+package org.example.game;
 
 import java.awt.Point;
 
