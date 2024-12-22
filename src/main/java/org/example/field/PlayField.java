@@ -139,6 +139,10 @@ public class PlayField extends JPanel {
     private void executeAction() {
         if (isExecutingAction) return; // 실행 중이면 무시
 
+        // 방어 상태 초기화
+        character1.setDefending(false);
+        character2.setDefending(false);
+
         Card card1 = character1.useCard();
         Card card2 = character2.useCard();
 

@@ -2,8 +2,6 @@ package org.example.connect;
 
 import java.util.Arrays;
 import java.util.Collections;
-import org.example.card.AttackCard;
-import org.example.card.AttackShape;
 import org.example.card.Card;
 
 import javax.swing.*;
@@ -15,15 +13,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import org.example.card.CardData;
-import org.example.card.CardType;
-import org.example.card.MoveDirection;
 import org.example.character.Character;
 import org.example.characterEnum.CharacterCardList;
 import org.example.characterEnum.CharacterEnum;
 import org.example.field.PlayField;
 import org.example.field.SceneCardPanel;
 import org.example.select.HealthEnergyBarPanel;
-import org.example.test.StateManager;
+import org.example.test.StateManagerTest;
 
 public class CardSelectionAndChatView extends JFrame {
     private JTextArea chatArea;
@@ -259,8 +255,18 @@ public class CardSelectionAndChatView extends JFrame {
         // PlayField 설정 (중간 50%)
         PlayField gamePanel = new PlayField(inu, sho);
 
-        org.example.test.StateManager stateManager = new StateManager(inu, sho);
-        List<int[]> statsList = stateManager.getStatsList();
+//        printCharacterState(inu);
+//        printCharacterState(sho);
+//
+//        StateManagerTest stateManagerTest = new StateManagerTest(inu, sho);
+//        List<int[]> statsList = stateManagerTest.getStatsList();
+
+        CharacterStateManager manager = new CharacterStateManager(inu, sho);
+        manager.processCards();
+
+        List<int[]> statsList = manager.getStateHistory();
+
+        System.out.println("statsList = " + statsList);
 
         for (int i = 0; i < statsList.size(); i++) {
             int[] stats = statsList.get(i);
@@ -313,6 +319,27 @@ public class CardSelectionAndChatView extends JFrame {
         // 프레임 표시
         frame.setVisible(true);
         gamePanel.requestFocusInWindow(); // PlayField에 포커스를 맞춤
+    }
+
+    private void printCharacterState(Character character) {
+        System.out.printf("=== %s 상태 ===%n", character.getName());
+        System.out.printf("위치: (%d, %d)%n", character.getGridPosition().x, character.getGridPosition().y);
+
+        System.out.println("카드 리스트:");
+        List<Card> cardList = character.getCardList();
+        for (int i = 0; i < cardList.size(); i++) {
+            Card card = cardList.get(i);
+            CardData cardData = card.getCardData();
+            System.out.printf("  %d. [Type: %s, Damage: %d, Stamina: %d, Direction: %s, Shape: %s]%n",
+                    i + 1,
+                    cardData.getCardType(),
+                    cardData.getDamage(),
+                    cardData.getStamina(),
+                    cardData.getMoveDir() != null ? cardData.getMoveDir() : "N/A",
+                    cardData.getAtkShape() != null ? cardData.getAtkShape() : "N/A"
+            );
+        }
+        System.out.println("=================\n");
     }
 
     // Inner Class for Card Selection Panel

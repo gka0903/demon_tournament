@@ -9,7 +9,7 @@ import org.example.select.HealthEnergyBarPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import org.example.test.StateManager;
+import org.example.test.StateManagerTest;
 
 public class Field {
     public static void main(String[] args) {
@@ -65,8 +65,8 @@ public class Field {
         // PlayField 설정 (중간 50%)
         PlayField gamePanel = new PlayField(inuyasha, kagome);
 
-        StateManager stateManager = new StateManager(inuyasha, kagome);
-        List<int[]> statsList = stateManager.getStatsList();
+        StateManagerTest stateManagerTest = new StateManagerTest(inuyasha, kagome);
+        List<int[]> statsList = stateManagerTest.getStatsList();
 
         for (int i = 0; i < statsList.size(); i++) {
             int[] stats = statsList.get(i);
