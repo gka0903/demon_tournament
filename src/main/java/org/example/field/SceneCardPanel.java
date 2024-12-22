@@ -9,7 +9,6 @@ import org.example.card.CardData;
 import org.example.card.CardType;
 
 public class SceneCardPanel extends JPanel {
-    private JButton startButton;
     private List<SceneCard> leftCards;
     private List<SceneCard> rightCards;
 
@@ -55,22 +54,12 @@ public class SceneCardPanel extends JPanel {
                 SceneCard rightCard = rightCards.remove(0); // 우측 끝 카드
                 moveCardsToCenter(leftCard, rightCard); // 카드 중앙으로 이동
             } else {
-                startButton.setEnabled(true); // 모든 카드 이동 후 버튼 활성화
                 ((Timer) e.getSource()).stop(); // 타이머 종료
             }
         });
 
         timer.start();
         timer.getActionListeners()[0].actionPerformed(null); // 첫 애니메이션 실행
-
-        // 애니메이션 시작 버튼 추가
-        startButton = new JButton("카드 고르기");
-        startButton.setBounds(550, 170, 100, 50); // 버튼 위치 설정
-        startButton.setEnabled(false); // 애니메이션이 끝날 때까지 비활성화
-        startButton.addActionListener(e -> {
-            System.out.println("화면 넘기기");
-        });
-        add(startButton);
     }
 
     // 카드 이동 로직

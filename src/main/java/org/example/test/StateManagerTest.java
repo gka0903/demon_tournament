@@ -7,12 +7,12 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StateManager {
+public class StateManagerTest {
     private final Character player1;
     private final Character player2;
     private final List<int[]> statsList;
 
-    public StateManager(Character player1, Character player2) {
+    public StateManagerTest(Character player1, Character player2) {
         this.player1 = player1;
         this.player2 = player2;
         this.statsList = new ArrayList<>();

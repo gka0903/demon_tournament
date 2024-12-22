@@ -7,8 +7,8 @@ import java.util.*;
 public class JavaChatServer {
     private static final int PORT = 30000; // 기본 포트 번호
     private static Set<ClientHandler> clients = new HashSet<>();
-    private static List<String> firstClientList = null;
-    private static List<String> secondClientList = null;
+    private static String firstClientData = null; // 첫 번째 클라이언트 데이터
+    private static String secondClientData = null; // 두 번째 클라이언트 데이터
 
     public static void main(String[] args) {
         System.out.println("Chat server started...");
@@ -26,20 +26,20 @@ public class JavaChatServer {
         }
     }
 
-    public synchronized static void receiveList(List<String> clientList, ClientHandler sender) {
-        if (firstClientList == null) {
-            firstClientList = clientList;
-        } else if (secondClientList == null) {
-            secondClientList = clientList;
+    public synchronized static void receiveData(String clientData, ClientHandler sender) {
+        if (firstClientData == null) {
+            firstClientData = clientData;
+        } else if (secondClientData == null) {
+            secondClientData = clientData;
 
-            // Broadcast both lists to all clients
+            // Broadcast both data strings to all clients
             for (ClientHandler client : clients) {
-                client.sendLists(firstClientList, secondClientList);
+                client.sendData(firstClientData, secondClientData);
             }
 
             // Reset for next round
-            firstClientList = null;
-            secondClientList = null;
+            firstClientData = null;
+            secondClientData = null;
         }
     }
 
@@ -58,12 +58,11 @@ public class JavaChatServer {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                // Read and process incoming lists
-                String receivedList;
-                while ((receivedList = in.readLine()) != null) {
-                    System.out.println("Received list from client: " + receivedList);
-                    List<String> clientList = Arrays.asList(receivedList.split(","));
-                    receiveList(clientList, this);
+                // Read and process incoming data
+                String receivedData;
+                while ((receivedData = in.readLine()) != null) {
+                    System.out.println("Received data from client: " + receivedData);
+                    receiveData(receivedData, this);
                 }
             } catch (IOException e) {
                 System.err.println("Error handling client: " + e.getMessage());
@@ -78,9 +77,9 @@ public class JavaChatServer {
             }
         }
 
-        public void sendLists(List<String> list1, List<String> list2) {
-            out.println("List 1: " + String.join(",", list1));
-            out.println("List 2: " + String.join(",", list2));
+        public void sendData(String data1, String data2) {
+            out.println(data1);
+            out.println(data2);
         }
     }
 }

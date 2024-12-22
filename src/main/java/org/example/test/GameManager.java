@@ -87,8 +87,8 @@ public class GameManager {
         kagome.addCard(new Card(new CardData(CardType.DEFENSE, 0, 0, "", "", false, null, null)));
 
         // StateManager 생성 및 상태 리스트 전달
-        StateManager stateManager = new StateManager(inuyasha, kagome);
-        List<int[]> statsList = stateManager.getStatsList();
+        StateManagerTest stateManagerTest = new StateManagerTest(inuyasha, kagome);
+        List<int[]> statsList = stateManagerTest.getStatsList();
 
         // GameManager 실행
         new GameManager(inuyasha, kagome, statsList);

@@ -48,7 +48,12 @@ public class JavaChatClientMain extends JFrame {
             String serverAddress = txtServerAddress.getText().trim();
             int port = Integer.parseInt(txtPort.getText().trim());
 
-            List<Card> cardList = CharacterCardList.SESSHOMARU.getCards();
+            List<Card> cardList;
+            if (userName.equals("INUYASHA")) {
+                cardList = CharacterCardList.INUYASHA.getCards();
+            } else {
+                cardList = CharacterCardList.SESSHOMARU.getCards();
+            }
 
             new CardSelectionAndChatView(userName, serverAddress, port, cardList);
             dispose(); // Close the login window
