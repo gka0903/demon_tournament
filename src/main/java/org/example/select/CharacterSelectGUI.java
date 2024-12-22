@@ -8,11 +8,10 @@ import java.awt.event.ActionListener;
 public class CharacterSelectGUI extends JFrame {
     private JLabel selectedCharacterLabel;
     private JButton[] characterButtons;
-    private String[] characters = {"Inuyasha", "Kagome", "Sango"};
+    private String[] characters = {"Inuyasha", "Sesshomaru"};
     private String[] imagePaths = {
             "src/main/resources/animations/select/inuyasha.png",
-            "src/main/resources/animations/select/kagome.png",
-            "src/main/resources/animations/select/sango.png"
+            "src/main/resources/animations/select/maru.png"
     };
 
     private String player1Character = null;  // 플레이어 1 캐릭터
@@ -20,9 +19,9 @@ public class CharacterSelectGUI extends JFrame {
 
     public CharacterSelectGUI() {
         setTitle("Character Selection");
-        setSize(800, 600);
+        setSize(800, 600); // 창 크기 동일하게 유지
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);  // 버튼 테두리 크기가 자꾸 오류 나서 Layout을 Null로 받고 수동으로 위치 설정
+        setLayout(null); // 수동 레이아웃 설정
 
         Container c = getContentPane();
 
@@ -33,10 +32,10 @@ public class CharacterSelectGUI extends JFrame {
         c.add(selectedCharacterLabel);
 
         characterButtons = new JButton[characters.length];
-        int buttonSize = 150;
-        int startX = 100;
-        int startY = 100;
-        int gap = 200;
+        int buttonSize = 200; // 버튼 크기 조정
+        int startX = 200; // 버튼 시작 위치 조정
+        int startY = 200; // 버튼 Y 위치 조정
+        int gap = 300; // 버튼 간 간격
 
         for (int i = 0; i < characters.length; i++) {
             ImageIcon icon = new ImageIcon(imagePaths[i]);
