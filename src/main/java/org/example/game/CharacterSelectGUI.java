@@ -2,8 +2,6 @@ package org.example.game;
 
 import org.example.card.Card;
 import org.example.characterEnum.CharacterCardList;
-import org.example.game.CardSelectionAndChatView;
-import org.example.select.VSAnimation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,50 +78,45 @@ public class CharacterSelectGUI extends JFrame {
     }
 
     private void playAnimation(String characterName, String serverAddress, int port) throws IOException {
-        getContentPane().removeAll(); // 기존 선택 화면 제거
+        connectToServer(serverAddress, port, characterName); // 서버에 연결 및 데이터 전송
+
+        // 대기 화면 추가 (예: "Waiting for other player...")
+        JLabel waitingLabel = new JLabel("Waiting for other player...", SwingConstants.CENTER);
+        waitingLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        waitingLabel.setForeground(Color.WHITE);
+        getContentPane().removeAll();
+        add(waitingLabel);
+        revalidate();
         repaint();
 
-        JLayeredPane layeredPane = getLayeredPane();
+        // 서버 응답 대기
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        String response1 = in.readLine();
+        String response2 = in.readLine();
 
-        // 상대방 캐릭터 설정: 선택된 캐릭터와 다른 캐릭터로 설정
-        String opponentCharacter = characterName.equals("INUYASHA") ? "SESSHOMARU" : "INUYASHA";
-
-        // 애니메이션 추가
-        Container animationContainer = new Container();
-        animationContainer.setLayout(null);
-        animationContainer.setBounds(0, 0, getWidth(), getHeight());
-        new VSAnimation(animationContainer,
-                "src/main/resources/animations/select/" + characterName.toLowerCase() + "1.jpeg",
-                "src/main/resources/animations/select/" + opponentCharacter.toLowerCase() + "2.jpeg");
-        layeredPane.add(animationContainer, JLayeredPane.POPUP_LAYER);
-
-        Timer closeTimer = new Timer(3000, e -> {
-            try {
-                connectToServer(serverAddress, port, characterName);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        closeTimer.setRepeats(false);
-        closeTimer.start();
+        if (response1 != null && response2 != null) {
+            System.out.println("Both players ready: " + response1 + ", " + response2);
+            SwingUtilities.invokeLater(() -> {
+                // 다음 화면으로 전환
+                List<Card> cardList = CharacterCardList.valueOf(characterName).getCards();
+                new CardSelectionAndChatView(characterName, serverAddress, port, cardList);
+                dispose();
+            });
+        }
     }
-
 
     private void connectToServer(String serverAddress, int port, String characterName) throws IOException {
         // 서버 연결
         socket = new Socket(serverAddress, port);
-        System.out.println("Connected to server as: " + characterName);
-
-        // 캐릭터에 맞는 카드 가져오기
-        List<Card> cardList = CharacterCardList.valueOf(characterName).getCards();
-
-        // 카드 선택 및 채팅 화면으로 이동
-        SwingUtilities.invokeLater(() -> new CardSelectionAndChatView(characterName, serverAddress, port, cardList));
-        dispose(); // 현재 창 닫기
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        out.println(characterName);
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new CharacterSelectGUI("127.0.0.1", 30000));
     }
 }
+
+
+
 
