@@ -6,8 +6,6 @@ import org.example.character.Character;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
-
 
 public class CharacterStateManager {
     private final Character character1;
@@ -87,23 +85,7 @@ public class CharacterStateManager {
                 damage = Math.max(0, damage - 10); // 방어 시 데미지 감소
             }
             target.takeDamage(damage);
-
-            // 체력 확인
-            if (isGameOver()) {
-                showGameOverMessage();
-                return; // 게임 종료
-            }
         }
-    }
-
-    private boolean isGameOver() {
-        return character1.getHealth() <= 0 || character2.getHealth() <= 0;
-    }
-
-    private void showGameOverMessage() {
-        String winner = character1.getHealth() > 0 ? "Character 1 Wins!" : "Character 2 Wins!";
-        JOptionPane.showMessageDialog(null, "GAME OVER!\n" + winner, "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        System.exit(0); // 게임 종료
     }
 
     private void handleMove(Card card, Character player) {
