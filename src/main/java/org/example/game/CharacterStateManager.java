@@ -74,14 +74,12 @@ public class CharacterStateManager {
         int damage = attackCard.getCardData().getDamage();
         int staminaCost = attackCard.getCardData().getStamina();
 
-        // 스태미나 차감은 무조건 실행
         if (attacker.getStamina() >= staminaCost) {
             attacker.consumeStamina(staminaCost);
         } else {
             return; // 스태미나 부족으로 공격 불가
         }
 
-        // 공격 성공 여부 확인
         if (isInRange) {
             if (target.isDefending()) {
                 damage = Math.max(0, damage - 10); // 방어 시 데미지 감소

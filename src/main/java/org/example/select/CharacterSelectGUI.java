@@ -71,6 +71,9 @@ public class CharacterSelectGUI extends JFrame {
             getContentPane().setLayout(null);
 
             // VSAnimation 추가
+            new VSAnimation(getContentPane(),
+                    "src/main/resources/animations/select/" + character.toLowerCase() + "1.jpeg",
+                    "src/main/resources/animations/select/" + opponentCharacter.toLowerCase() + "2.jpeg");
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

@@ -38,7 +38,7 @@ public class SceneCardPanel extends JPanel {
         for (int i = 0; i < rightCardData.size(); i++) {
             Card cardRight = rightCardData.get(i);
             JLabel rightLabel = new JLabel();
-            int rightX = 750 + i * 150; // 카드 위치 설정
+            int rightX = 1000 + i * 150; // 카드 위치 설정
             rightLabel.setBounds(rightX, 20, 100, 150);
             SceneCard rightSceneCard = new SceneCard(rightLabel);
             rightSceneCard.setCardSprite(cardRight); // 카드 설정
@@ -69,8 +69,8 @@ public class SceneCardPanel extends JPanel {
 
         Point leftStart = leftLabel.getLocation();
         Point rightStart = rightLabel.getLocation();
-        Point centerLeftTarget = new Point(500, 20); // 좌측 카드 중앙
-        Point centerRightTarget = new Point(600, 20); // 우측 카드 중앙
+        Point centerLeftTarget = new Point(650, 20); // 좌측 카드 중앙
+        Point centerRightTarget = new Point(750, 20); // 우측 카드 중앙
 
         Timer animationTimer = new Timer(10, null); // 10ms마다 애니메이션 진행
         final int steps = 50; // 애니메이션 단계 수

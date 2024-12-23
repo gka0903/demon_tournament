@@ -32,6 +32,7 @@ public class Server {
         } else if (secondClientData == null) {
             secondClientData = clientData;
 
+            // 두 명의 데이터가 모두 수신되었을 때 클라이언트들에게 전송
             for (ClientHandler client : clients) {
                 client.sendData(firstClientData, secondClientData);
             }
